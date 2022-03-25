@@ -21,28 +21,12 @@ func main() {
 	}
 
 	dlRepo := repository.NewDriverLocationRepo(mongo)
-	dlService := service.NewDriverLocationServiceImpl(dlRepo)
+	dlService := service.NewDriverLocationService(dlRepo)
 	dlHandler := handler.NewDriverLocationHandler(dlService)
 
 	app := fiber.New()
 	r := router.HandlerList{Dlh: dlHandler}
 	r.SetupRoutes(app)
-
-	/*c := db.GetCollection("driver_locations")
-
-	driver := core.DriverLocation{Coordinates: [2]float64{23.20, 22.10}}
-
-	_, err := c.InsertOne(context.Background(), driver)
-	if err != nil {
-		fmt.Println("in insert: ", err)
-	}*/
-
-	/*app := fiber.New()
-	app.Use(logger.New())
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.JSON(&fiber.Map{"data": "it works"})
-	})*/
 
 	log.Fatal(app.Listen(":8080"))
 }

@@ -10,10 +10,9 @@ type HandlerList struct {
 	Dlh handler.DriverLocationHandler
 }
 
-func (handler *HandlerList) SetupRoutes(app *fiber.App) {
+func (h *HandlerList) SetupRoutes(app *fiber.App) {
 	app.Use(logger.New())
 
 	dl := app.Group("api").Group("driver-location")
-	SetupDriverLocationRoute(dl)
-
+	h.SetupDriverLocationRoute(dl)
 }

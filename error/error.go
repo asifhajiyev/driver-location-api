@@ -3,7 +3,7 @@ package error
 import "net/http"
 
 type Error struct {
-	Code    int    `json:",omitempty"`
+	Code    int    `json:"code"`
 	Message string `json:"message"`
 }
 
