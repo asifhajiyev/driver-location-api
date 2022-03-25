@@ -24,7 +24,6 @@ func NewDriverLocationService(repo repository.DriverLocationRepo) DriverLocation
 func (dls driverLocationService) SaveDriverLocation(dlr dto.DriverLocationRequest) (*dto.DriverLocationResponse, *err.Error) {
 	e := dlr.Validate()
 	if e != nil {
-		fmt.Println("in service", *e)
 		return nil, e
 	}
 	dl := dlr.ToRepoModel()
@@ -34,8 +33,9 @@ func (dls driverLocationService) SaveDriverLocation(dlr dto.DriverLocationReques
 		return nil, e
 	}
 	return &dto.DriverLocationResponse{
-		Longitude: fmt.Sprint(result.Coordinates[0]),
-		Latitude:  fmt.Sprint(dl.Coordinates[1]),
+		Type:      result.Location.Type,
+		Longitude: fmt.Sprint(result.Location.Coordinates.([]float64)[0]),
+		Latitude:  fmt.Sprint(result.Location.Coordinates.([]float64)[1]),
 	}, nil
 
 }

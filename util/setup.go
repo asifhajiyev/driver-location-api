@@ -11,3 +11,7 @@ func InitEnvVariables() {
 		log.Panicln("could not load env", err)
 	}
 }
+
+func UploadDriverData() {
+
+}

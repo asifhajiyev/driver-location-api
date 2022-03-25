@@ -30,13 +30,6 @@ func (dlr driverLocationRepo) SaveDriverLocation(dl core.DriverLocation) (*core.
 		log.Errorf("SaveDriverLocation.error: %v", e)
 		return nil, err.ServerError("data could not be saved")
 	}
-	//ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-	/*_, e := collection.InsertOne(ctx, dl)
-	if e != nil {
-		log.Errorf("SaveDriverLocation.error: %v", e)
-		return nil, err.ServerError("data could not be saved")
-	}*/
 	return &dl, nil
 }
 

@@ -1,5 +1,5 @@
 package core
 
-type Driver struct {
+type DriverLocation struct {
 	Location Geometry `json:"location" bson:"location"`
 }

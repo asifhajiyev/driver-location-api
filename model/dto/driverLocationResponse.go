@@ -1,6 +1,7 @@
 package dto
 
 type DriverLocationResponse struct {
-	Longitude string
-	Latitude  string
+	Type      string `json:"type"`
+	Longitude string `json:"longitude"`
+	Latitude  string `json:"latitude"`
 }
