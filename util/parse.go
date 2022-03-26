@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"strconv"
 )
@@ -15,7 +14,6 @@ func StringToFloat(s string) float64 {
 }
 
 func StringToInt(s string) int {
-	fmt.Println("s is", s)
 	i, err := strconv.Atoi(s)
 	if err != nil {
 		log.Panicf("could not be parsed %s", s)
