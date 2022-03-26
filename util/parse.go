@@ -1,7 +1,9 @@
 package util
 
 import (
+	"encoding/csv"
 	log "github.com/sirupsen/logrus"
+	"os"
 	"strconv"
 )
 
@@ -19,4 +21,19 @@ func StringToInt(s string) int {
 		log.Panicf("could not be parsed %s", s)
 	}
 	return i
+}
+
+func ParseCSVToSlice(filePath string) [][]string {
+	f, err := os.Open(filePath)
+	if err != nil {
+		log.Fatal("unable to read input file "+filePath, err)
+	}
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	records, err := csvReader.ReadAll()
+	if err != nil {
+		log.Fatal("unable to parse CSV file for "+filePath, err)
+	}
+	return records[1:]
 }
