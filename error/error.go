@@ -37,3 +37,10 @@ func UnAuthorizedError(msg string) *Error {
 		Message: msg,
 	}
 }
+
+func ValidationError(msg string) *Error {
+	return &Error{
+		Code:    http.StatusBadRequest,
+		Message: msg,
+	}
+}

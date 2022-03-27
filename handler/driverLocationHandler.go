@@ -3,7 +3,6 @@ package handler
 import (
 	"driver-location-api/model/dto"
 	"driver-location-api/service"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
@@ -42,8 +41,13 @@ func (dlh driverLocationHandler) Search(c *fiber.Ctx) error {
 	longitude := c.Query("longitude")
 	latitude := c.Query("latitude")
 	radius := c.Query("radius")
-	fmt.Println(longitude)
-	fmt.Println(latitude)
-	fmt.Println(radius)
-	return nil
+	response, err := dlh.Dls.GetNearestDriver(longitude, latitude, radius)
+	if err != nil {
+		return c.Status(err.Code).JSON(err)
+	}
+	return c.Status(http.StatusOK).JSON(ApiResponse{
+		Code:    http.StatusOK,
+		Message: "success",
+		Data:    response,
+	})
 }

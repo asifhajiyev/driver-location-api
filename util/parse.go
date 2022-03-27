@@ -10,7 +10,7 @@ import (
 func StringToFloat(s string) float64 {
 	f, err := strconv.ParseFloat(s, 64)
 	if err != nil {
-		log.Panicf("could not be parsed %s", s)
+		log.Errorf("'%s' could not be parsed", s)
 	}
 	return f
 }
@@ -18,7 +18,7 @@ func StringToFloat(s string) float64 {
 func StringToInt(s string) int {
 	i, err := strconv.Atoi(s)
 	if err != nil {
-		log.Panicf("could not be parsed %s", s)
+		log.Errorf("'%s' could not be parsed", s)
 	}
 	return i
 }

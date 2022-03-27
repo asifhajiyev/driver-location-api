@@ -13,7 +13,7 @@ import (
 type DriverLocationService interface {
 	SaveDriverLocation(dlr dto.DriverLocationRequest) (*dto.DriverLocationResponse, *err.Error)
 	UploadDriverLocationFile() *err.Error
-	GetNearestDriver(longitude, latitude float64, distance int) (*model.DriverInfo, *err.Error)
+	GetNearestDriver(longitude, latitude string, distance string) (*model.DriverInfo, *err.Error)
 }
 
 type driverLocationService struct {
@@ -45,9 +45,15 @@ func (dls driverLocationService) SaveDriverLocation(dlr dto.DriverLocationReques
 func (dls driverLocationService) UploadDriverLocationFile() *err.Error {
 	return nil
 }
-func (dls driverLocationService) GetNearestDriver(longitude, latitude float64, radius int) (*model.DriverInfo, *err.Error) {
-	riderLocation := core.NewPoint(longitude, latitude)
-	drivers, _ := dls.repo.GetNearDriversLocation(riderLocation, radius)
+func (dls driverLocationService) GetNearestDriver(longitude, latitude string, radius string) (*model.DriverInfo, *err.Error) {
+	lng := util.StringToFloat(longitude)
+	lt := util.StringToFloat(latitude)
+	if !model.IsValidLongitude(lng) || !model.IsValidLatitude(lt) {
+		return nil, err.ValidationError("longitude and latitude should be in the right range")
+	}
+	r := util.StringToInt(radius)
+	riderLocation := core.NewPoint(lng, lt)
+	drivers, _ := dls.repo.GetNearDriversLocation(riderLocation, r)
 	nearestDriver := (*drivers)[0]
 	distance := util.CalculateDistance(riderLocation, nearestDriver.Location)
 

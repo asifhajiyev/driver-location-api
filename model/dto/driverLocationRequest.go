@@ -2,6 +2,7 @@ package dto
 
 import (
 	err "driver-location-api/error"
+	"driver-location-api/model"
 	"driver-location-api/model/core"
 	"driver-location-api/util"
 	"net/http"
@@ -27,22 +28,13 @@ func (dlr DriverLocationRequest) ToRepoModel() core.DriverLocation {
 }
 
 func (dlr DriverLocationRequest) Validate() *err.Error {
-	if dlr.Longitude == "" || dlr.Latitude == "" ||
-		!hasValidCoordinates(dlr) ||
-		!isPointType(dlr.Type) {
+	if !model.IsValidLongitude(util.StringToFloat(dlr.Longitude)) ||
+		!model.IsValidLatitude(util.StringToFloat(dlr.Latitude)) ||
+		!model.IsPointType(dlr.Type) {
 		return &err.Error{
 			Code:    http.StatusUnprocessableEntity,
 			Message: "Make sure fields are not empty and valid",
 		}
 	}
 	return nil
-}
-
-func isPointType(s string) bool {
-	return s == "Point"
-}
-
-func hasValidCoordinates(dlr DriverLocationRequest) bool {
-	return util.StringToFloat(dlr.Longitude) >= -180 && util.StringToFloat(dlr.Longitude) <= 180 &&
-		util.StringToFloat(dlr.Latitude) >= -90 && util.StringToFloat(dlr.Latitude) <= 90
 }
