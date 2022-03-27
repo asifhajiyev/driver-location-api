@@ -23,8 +23,8 @@ func main() {
 	dlService := service.NewDriverLocationService(dlRepo)
 	dlHandler := handler.NewDriverLocationHandler(dlService)
 
-	starterDataFilePath := os.Args[1]
-	UploadDriverData(dlRepo, starterDataFilePath)
+	//starterDataFilePath := os.Args[1]
+	//UploadDriverData(dlRepo, starterDataFilePath)
 
 	app := fiber.New()
 	r := router.HandlerList{Dlh: dlHandler}

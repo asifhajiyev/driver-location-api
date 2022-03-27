@@ -3,12 +3,14 @@ package handler
 import (
 	"driver-location-api/model/dto"
 	"driver-location-api/service"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
 
 type DriverLocationHandler interface {
 	SaveDriverLocation(c *fiber.Ctx) error
+	Search(c *fiber.Ctx) error
 }
 
 type driverLocationHandler struct {
@@ -34,4 +36,14 @@ func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 		Message: "success",
 		Data:    response,
 	})
+}
+
+func (dlh driverLocationHandler) Search(c *fiber.Ctx) error {
+	longitude := c.Query("longitude")
+	latitude := c.Query("latitude")
+	radius := c.Query("radius")
+	fmt.Println(longitude)
+	fmt.Println(latitude)
+	fmt.Println(radius)
+	return nil
 }

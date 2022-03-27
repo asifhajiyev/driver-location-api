@@ -6,4 +6,5 @@ import (
 
 func (h HandlerList) SetupDriverLocationRoute(dl fiber.Router) {
 	dl.Post("/save", h.Dlh.SaveDriverLocation)
+	dl.Get("/search", h.Dlh.Search)
 }

@@ -7,7 +7,9 @@ import (
 	"driver-location-api/model/core"
 	"fmt"
 	log "github.com/sirupsen/logrus"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 const collectionName = "driver_locations"
@@ -15,7 +17,8 @@ const collectionName = "driver_locations"
 type DriverLocationRepo interface {
 	SaveDriverLocation(dl core.DriverLocation) (*core.DriverLocation, *err.Error)
 	SaveDriverLocationFile(dl []core.DriverLocation) *err.Error
-	GetNearestDriver() *err.Error
+	GetNearDriversLocation(g core.Geometry, radius int) (*[]core.DriverLocation, *err.Error)
+	createIndex(field string, i string) *err.Error
 }
 type driverLocationRepo struct {
 	c *mongo.Collection
@@ -46,9 +49,47 @@ func (dlr driverLocationRepo) SaveDriverLocationFile(dl []core.DriverLocation) *
 		log.Errorf("SaveDriverLocation.error: %v", e)
 		return err.ServerError("data could not be saved")
 	}
+	dlr.createIndex("location", "2dsphere")
 	return nil
 }
 
-func (dlr driverLocationRepo) GetNearestDriver() *err.Error {
+func (dlr driverLocationRepo) GetNearDriversLocation(g core.Geometry, radius int) (*[]core.DriverLocation, *err.Error) {
+	ctx := context.Background()
+	//point := core.NewPoint(-73.9667, 40.78)
+
+	filter := bson.D{
+		{"location",
+			bson.D{
+				{"$nearSphere", bson.D{
+					{"$geometry", g},
+					{"$maxDistance", radius},
+				}},
+			}},
+	}
+
+	var drivers []core.DriverLocation
+	cursor, e := dlr.c.Find(ctx, filter)
+	fmt.Println("cursor", cursor)
+
+	if e != nil {
+		return &drivers, err.NotFoundError("no driver found near you")
+	}
+	e = cursor.All(ctx, &drivers)
+
+	if e != nil {
+		return nil, err.NotFoundError("no driver found near you")
+	}
+
+	return &drivers, nil
+}
+
+func (dlr driverLocationRepo) createIndex(field string, i string) *err.Error {
+	_, e := dlr.c.Indexes().CreateOne(context.Background(), mongo.IndexModel{
+		Keys: bsonx.Doc{{Key: field, Value: bsonx.String(i)}},
+	})
+	if e != nil {
+		log.Errorf("SaveDriverLocation.error: %v", e)
+		return err.ServerError("index could not be created")
+	}
 	return nil
 }
