@@ -29,7 +29,7 @@ func (dls driverLocationService) SaveDriverLocation(dlr dto.DriverLocationReques
 	if e != nil {
 		return nil, e
 	}
-	di := dlr.ToRepoModel()
+	di := dlr.ToDriverInfo()
 	result, e := dls.repo.SaveDriverLocation(di)
 
 	if e != nil {

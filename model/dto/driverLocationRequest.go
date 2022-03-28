@@ -12,7 +12,7 @@ type DriverLocationRequest struct {
 	Location core.Coordinate `json:"location"`
 }
 
-func (dlr DriverLocationRequest) ToRepoModel() core.DriverInfo {
+func (dlr DriverLocationRequest) ToDriverInfo() core.DriverInfo {
 	t := dlr.Type
 	longitude := dlr.Location.Longitude
 	latitude := dlr.Location.Latitude
