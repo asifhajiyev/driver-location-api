@@ -15,9 +15,9 @@ import (
 const collectionName = "driver_locations"
 
 type DriverLocationRepo interface {
-	SaveDriverLocation(dl core.DriverLocation) (*core.DriverLocation, *err.Error)
-	SaveDriverLocationFile(dl []core.DriverLocation) *err.Error
-	GetNearDriversLocation(g core.Geometry, radius int) (*[]core.DriverLocation, *err.Error)
+	SaveDriverLocation(di core.DriverInfo) (*core.DriverInfo, *err.Error)
+	SaveDriverLocationFile(di []core.DriverInfo) *err.Error
+	GetNearDriversInfo(g core.Location, radius int) ([]*core.DriverInfo, *err.Error)
 	createIndex(field string, i string) *err.Error
 }
 type driverLocationRepo struct {
@@ -28,20 +28,20 @@ func NewDriverLocationRepo(m *db.MongoRepository) DriverLocationRepo {
 	return &driverLocationRepo{c: m.GetCollection(collectionName)}
 }
 
-func (dlr driverLocationRepo) SaveDriverLocation(dl core.DriverLocation) (*core.DriverLocation, *err.Error) {
-	fmt.Println(dl)
-	_, e := dlr.c.InsertOne(context.Background(), dl)
+func (dlr driverLocationRepo) SaveDriverLocation(di core.DriverInfo) (*core.DriverInfo, *err.Error) {
+	fmt.Println(di)
+	_, e := dlr.c.InsertOne(context.Background(), di)
 	if e != nil {
 		log.Errorf("SaveDriverLocation.error: %v", e)
 		return nil, err.ServerError("data could not be saved")
 	}
-	return &dl, nil
+	return &di, nil
 }
 
-func (dlr driverLocationRepo) SaveDriverLocationFile(dl []core.DriverLocation) *err.Error {
+func (dlr driverLocationRepo) SaveDriverLocationFile(di []core.DriverInfo) *err.Error {
 
 	var d []interface{}
-	for _, t := range dl {
+	for _, t := range di {
 		d = append(d, t)
 	}
 	_, e := dlr.c.InsertMany(context.Background(), d)
@@ -53,34 +53,44 @@ func (dlr driverLocationRepo) SaveDriverLocationFile(dl []core.DriverLocation) *
 	return nil
 }
 
-func (dlr driverLocationRepo) GetNearDriversLocation(g core.Geometry, radius int) (*[]core.DriverLocation, *err.Error) {
+func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([]*core.DriverInfo, *err.Error) {
 	ctx := context.Background()
-	//point := core.NewPoint(-73.9667, 40.78)
+	fmt.Println("it works")
+	fmt.Println(l)
+	fmt.Println("it works")
 
 	filter := bson.D{
 		{"location",
 			bson.D{
 				{"$nearSphere", bson.D{
-					{"$geometry", g},
+					{"$geometry", l},
 					{"$maxDistance", radius},
 				}},
 			}},
 	}
 
-	var drivers []core.DriverLocation
+	var drivers []*core.DriverInfo
 	cursor, e := dlr.c.Find(ctx, filter)
-	fmt.Println("cursor", cursor)
 
 	if e != nil {
-		return &drivers, err.NotFoundError("no driver found near you")
+		return drivers, err.NotFoundError("no driver found near you")
 	}
 	e = cursor.All(ctx, &drivers)
+	/*for cursor.Next(ctx) {
+		fmt.Println("cursor raw", cursor.Current)
+		var d *core.DriverInfo
+		e = cursor.Decode(&d)
+		if e != nil {
+			return nil, err.NotFoundError("can not fetch drivers")
+		}
+		drivers = append(drivers, d)
+	}*/
 
 	if e != nil {
 		return nil, err.NotFoundError("no driver found near you")
 	}
 
-	return &drivers, nil
+	return drivers, nil
 }
 
 func (dlr driverLocationRepo) createIndex(field string, i string) *err.Error {

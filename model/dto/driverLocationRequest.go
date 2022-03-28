@@ -4,23 +4,21 @@ import (
 	err "driver-location-api/error"
 	"driver-location-api/model"
 	"driver-location-api/model/core"
-	"driver-location-api/util"
 	"net/http"
 )
 
 type DriverLocationRequest struct {
-	Type      string `json:"type"`
-	Longitude string `json:"longitude"`
-	Latitude  string `json:"latitude"`
+	Type     string          `json:"type"`
+	Location core.Coordinate `json:"location"`
 }
 
-func (dlr DriverLocationRequest) ToRepoModel() core.DriverLocation {
+func (dlr DriverLocationRequest) ToRepoModel() core.DriverInfo {
 	t := dlr.Type
-	longitude := util.StringToFloat(dlr.Longitude)
-	latitude := util.StringToFloat(dlr.Latitude)
+	longitude := dlr.Location.Longitude
+	latitude := dlr.Location.Latitude
 
-	return core.DriverLocation{
-		Location: core.Geometry{
+	return core.DriverInfo{
+		Location: core.Location{
 			Type:        t,
 			Coordinates: []float64{longitude, latitude},
 		},
@@ -28,8 +26,8 @@ func (dlr DriverLocationRequest) ToRepoModel() core.DriverLocation {
 }
 
 func (dlr DriverLocationRequest) Validate() *err.Error {
-	if !model.IsValidLongitude(util.StringToFloat(dlr.Longitude)) ||
-		!model.IsValidLatitude(util.StringToFloat(dlr.Latitude)) ||
+	if !model.IsValidLongitude(dlr.Location.Longitude) ||
+		!model.IsValidLatitude(dlr.Location.Latitude) ||
 		!model.IsPointType(dlr.Type) {
 		return &err.Error{
 			Code:    http.StatusUnprocessableEntity,

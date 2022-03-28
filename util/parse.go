@@ -3,6 +3,7 @@ package util
 import (
 	"encoding/csv"
 	log "github.com/sirupsen/logrus"
+	"math"
 	"os"
 	"strconv"
 )
@@ -23,7 +24,7 @@ func StringToInt(s string) int {
 	return i
 }
 
-func ParseCSVToSlice(filePath string) [][]string {
+func CsvToSlice(filePath string) [][]string {
 	f, err := os.Open(filePath)
 	if err != nil {
 		log.Fatal("unable to read input file "+filePath, err)
@@ -36,4 +37,12 @@ func ParseCSVToSlice(filePath string) [][]string {
 		log.Fatal("unable to parse CSV file for "+filePath, err)
 	}
 	return records[1:]
+}
+
+func DegreesToRadians(d float64) float64 {
+	return d * math.Pi / 180
+}
+
+func FloatToTwoDecimalFloat(f float64) float64 {
+	return math.Round(f*100) / 100
 }

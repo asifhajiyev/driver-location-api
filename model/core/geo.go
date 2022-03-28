@@ -1,13 +1,36 @@
 package core
 
-type Geometry struct {
-	Type        string      `json:"type" bson:"type"`
-	Coordinates interface{} `json:"coordinates" bson:"coordinates"`
+import "fmt"
+
+type Location struct {
+	Type        string    `json:"type" bson:"type"`
+	Coordinates []float64 `json:"coordinates" bson:"coordinates"`
 }
 
-func NewPoint(longitude, latitude float64) Geometry {
-	return Geometry{
+type Coordinate struct {
+	Longitude float64
+	Latitude  float64
+}
+
+func NewPoint(longitude, latitude float64) Location {
+	return Location{
 		"Point",
 		[]float64{longitude, latitude},
 	}
 }
+
+func GetCoordinates(l Location) Coordinate {
+	fmt.Println("l is", l.Coordinates)
+	return Coordinate{
+		Longitude: l.Coordinates[0],
+		Latitude:  l.Coordinates[1],
+	}
+}
+
+/*func GetCoordinates(l Location) Coordinate {
+	fmt.Println("l is", l.Coordinates)
+	return Coordinate{
+		Longitude: l.Coordinates.([]float64)[0],
+		Latitude:  l.Coordinates.([]float64)[1],
+	}
+}*/

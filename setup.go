@@ -18,7 +18,7 @@ func InitEnvVariables() {
 }
 
 type Uploader interface {
-	UploadDriverLocationFile(dl []core.DriverLocation)
+	UploadDriverLocationFile(di []core.DriverInfo)
 }
 
 type upload struct {
@@ -29,21 +29,21 @@ func NewUpload(repo repository.DriverLocationRepo) Uploader {
 	return upload{repo: repo}
 }
 
-func (u upload) UploadDriverLocationFile(dl []core.DriverLocation) {
-	u.repo.SaveDriverLocationFile(dl)
+func (u upload) UploadDriverLocationFile(di []core.DriverInfo) {
+	u.repo.SaveDriverLocationFile(di)
 }
 
 func addToSliceAndUpload(dlRepo repository.DriverLocationRepo, s [][]string) {
-	var dls []core.DriverLocation
+	var dls []core.DriverInfo
 
 	for i := 0; i < len(s); i++ {
 		longitude := util.StringToFloat(s[i][0])
 		latitude := util.StringToFloat(s[i][1])
-		dl := core.DriverLocation{Location: core.Geometry{
+		di := core.DriverInfo{Location: core.Location{
 			Type:        "Point",
 			Coordinates: []float64{longitude, latitude},
 		}}
-		dls = append(dls, dl)
+		dls = append(dls, di)
 	}
 
 	u := NewUpload(dlRepo)
@@ -52,7 +52,7 @@ func addToSliceAndUpload(dlRepo repository.DriverLocationRepo, s [][]string) {
 
 func UploadDriverData(dlRepo repository.DriverLocationRepo, fp string) {
 	var dlUploadPatchSize = util.StringToInt(os.Getenv("bitaksi_task_INSERT_DOC_NUM_AT_ONCE"))
-	data := util.ParseCSVToSlice(fp)
+	data := util.CsvToSlice(fp)
 	patchData := make([][]string, 0)
 
 	for _, v := range data {
