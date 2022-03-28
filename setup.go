@@ -1,6 +1,7 @@
 package main
 
 import (
+	"driver-location-api/model"
 	"driver-location-api/model/core"
 	"driver-location-api/repository"
 	"driver-location-api/util"
@@ -18,7 +19,7 @@ func InitEnvVariables() {
 }
 
 type Uploader interface {
-	UploadDriverLocationFile(di []core.DriverInfo)
+	UploadDriverLocationFile(di []model.DriverInfo)
 }
 
 type upload struct {
@@ -29,17 +30,17 @@ func NewUpload(repo repository.DriverLocationRepo) Uploader {
 	return upload{repo: repo}
 }
 
-func (u upload) UploadDriverLocationFile(di []core.DriverInfo) {
+func (u upload) UploadDriverLocationFile(di []model.DriverInfo) {
 	u.repo.SaveDriverLocationFile(di)
 }
 
 func addToSliceAndUpload(dlRepo repository.DriverLocationRepo, s [][]string) {
-	var dls []core.DriverInfo
+	var dls []model.DriverInfo
 
 	for i := 0; i < len(s); i++ {
 		longitude := util.StringToFloat(s[i][0])
 		latitude := util.StringToFloat(s[i][1])
-		di := core.DriverInfo{Location: core.Location{
+		di := model.DriverInfo{Location: core.Location{
 			Type:        "Point",
 			Coordinates: []float64{longitude, latitude},
 		}}

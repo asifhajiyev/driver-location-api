@@ -4,16 +4,17 @@ import (
 	err "driver-location-api/error"
 	"driver-location-api/model"
 	"driver-location-api/model/core"
-	"driver-location-api/model/dto"
+	"driver-location-api/model/dto/request"
+	"driver-location-api/model/dto/response"
 	"driver-location-api/repository"
 	"driver-location-api/util"
 	"fmt"
 )
 
 type DriverLocationService interface {
-	SaveDriverLocation(dlr dto.DriverLocationRequest) (*dto.DriverLocationResponse, *err.Error)
+	SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error)
 	UploadDriverLocationFile() *err.Error
-	GetNearestDriver(longitude, latitude float64, distance int) (*model.RideInfo, *err.Error)
+	GetNearestDriver(sd request.SearchDriver) (*model.RideInfo, *err.Error)
 }
 
 type driverLocationService struct {
@@ -24,7 +25,7 @@ func NewDriverLocationService(repo repository.DriverLocationRepo) DriverLocation
 	return driverLocationService{repo: repo}
 }
 
-func (dls driverLocationService) SaveDriverLocation(dlr dto.DriverLocationRequest) (*dto.DriverLocationResponse, *err.Error) {
+func (dls driverLocationService) SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error) {
 	e := dlr.Validate()
 	if e != nil {
 		return nil, e
@@ -35,7 +36,7 @@ func (dls driverLocationService) SaveDriverLocation(dlr dto.DriverLocationReques
 	if e != nil {
 		return nil, e
 	}
-	return &dto.DriverLocationResponse{
+	return &response.DriverLocationResponse{
 		Type: result.Location.Type,
 		Location: core.Coordinate{
 			Longitude: result.Location.Coordinates[0],
@@ -48,7 +49,11 @@ func (dls driverLocationService) UploadDriverLocationFile() *err.Error {
 	return nil
 }
 
-func (dls driverLocationService) GetNearestDriver(longitude, latitude float64, radius int) (*model.RideInfo, *err.Error) {
+func (dls driverLocationService) GetNearestDriver(sd request.SearchDriver) (*model.RideInfo, *err.Error) {
+	longitude := sd.Coordinates.Longitude
+	latitude := sd.Coordinates.Latitude
+	radius := sd.Radius
+
 	if !model.IsValidLongitude(longitude) || !model.IsValidLatitude(latitude) {
 		return nil, err.ValidationError("longitude and latitude should be in the right range")
 	}

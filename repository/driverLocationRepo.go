@@ -4,6 +4,7 @@ import (
 	"context"
 	"driver-location-api/db"
 	err "driver-location-api/error"
+	"driver-location-api/model"
 	"driver-location-api/model/core"
 	"fmt"
 	log "github.com/sirupsen/logrus"
@@ -15,9 +16,9 @@ import (
 const collectionName = "driver_locations"
 
 type DriverLocationRepo interface {
-	SaveDriverLocation(di core.DriverInfo) (*core.DriverInfo, *err.Error)
-	SaveDriverLocationFile(di []core.DriverInfo) *err.Error
-	GetNearDriversInfo(g core.Location, radius int) ([]*core.DriverInfo, *err.Error)
+	SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error)
+	SaveDriverLocationFile(di []model.DriverInfo) *err.Error
+	GetNearDriversInfo(g core.Location, radius int) ([]*model.DriverInfo, *err.Error)
 	createIndex(field string, i string) *err.Error
 }
 type driverLocationRepo struct {
@@ -28,7 +29,7 @@ func NewDriverLocationRepo(m *db.MongoRepository) DriverLocationRepo {
 	return &driverLocationRepo{c: m.GetCollection(collectionName)}
 }
 
-func (dlr driverLocationRepo) SaveDriverLocation(di core.DriverInfo) (*core.DriverInfo, *err.Error) {
+func (dlr driverLocationRepo) SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error) {
 	fmt.Println(di)
 	_, e := dlr.c.InsertOne(context.Background(), di)
 	if e != nil {
@@ -38,7 +39,7 @@ func (dlr driverLocationRepo) SaveDriverLocation(di core.DriverInfo) (*core.Driv
 	return &di, nil
 }
 
-func (dlr driverLocationRepo) SaveDriverLocationFile(di []core.DriverInfo) *err.Error {
+func (dlr driverLocationRepo) SaveDriverLocationFile(di []model.DriverInfo) *err.Error {
 
 	var d []interface{}
 	for _, t := range di {
@@ -53,7 +54,7 @@ func (dlr driverLocationRepo) SaveDriverLocationFile(di []core.DriverInfo) *err.
 	return nil
 }
 
-func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([]*core.DriverInfo, *err.Error) {
+func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([]*model.DriverInfo, *err.Error) {
 	ctx := context.Background()
 	fmt.Println("it works")
 	fmt.Println(l)
@@ -69,7 +70,7 @@ func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([
 			}},
 	}
 
-	var drivers []*core.DriverInfo
+	var drivers []*model.DriverInfo
 	cursor, e := dlr.c.Find(ctx, filter)
 
 	if e != nil {

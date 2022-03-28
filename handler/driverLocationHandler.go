@@ -1,9 +1,8 @@
 package handler
 
 import (
-	"driver-location-api/model/dto"
+	"driver-location-api/model/dto/request"
 	"driver-location-api/service"
-	"driver-location-api/util"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 )
@@ -22,7 +21,7 @@ func NewDriverLocationHandler(Dls service.DriverLocationService) DriverLocationH
 }
 
 func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
-	var dlr dto.DriverLocationRequest
+	var dlr request.DriverLocationRequest
 
 	if err := c.BodyParser(&dlr); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(err)
@@ -39,13 +38,17 @@ func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 }
 
 func (dlh driverLocationHandler) Search(c *fiber.Ctx) error {
-	longitude := util.StringToFloat(c.Query("longitude"))
-	latitude := util.StringToFloat(c.Query("latitude"))
-	radius := util.StringToInt(c.Query("radius"))
-	response, err := dlh.Dls.GetNearestDriver(longitude, latitude, radius)
+	var sd request.SearchDriver
+
+	if err := c.BodyParser(&sd); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(err)
+	}
+
+	response, err := dlh.Dls.GetNearestDriver(sd)
 	if err != nil {
 		return c.Status(err.Code).JSON(err)
 	}
+
 	return c.Status(http.StatusOK).JSON(ApiResponse{
 		Code:    http.StatusOK,
 		Message: "success",

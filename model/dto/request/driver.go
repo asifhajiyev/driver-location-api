@@ -1,4 +1,4 @@
-package dto
+package request
 
 import (
 	err "driver-location-api/error"
@@ -12,12 +12,17 @@ type DriverLocationRequest struct {
 	Location core.Coordinate `json:"location"`
 }
 
-func (dlr DriverLocationRequest) ToDriverInfo() core.DriverInfo {
+type SearchDriver struct {
+	Radius      int
+	Coordinates core.Coordinate
+}
+
+func (dlr DriverLocationRequest) ToDriverInfo() model.DriverInfo {
 	t := dlr.Type
 	longitude := dlr.Location.Longitude
 	latitude := dlr.Location.Latitude
 
-	return core.DriverInfo{
+	return model.DriverInfo{
 		Location: core.Location{
 			Type:        t,
 			Coordinates: []float64{longitude, latitude},
