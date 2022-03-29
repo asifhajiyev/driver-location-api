@@ -61,8 +61,11 @@ func (dls driverLocationService) GetNearestDriver(sd request.SearchDriver) (*mod
 	riderLocation := core.NewPoint(longitude, latitude)
 	drivers, _ := dls.repo.GetNearDriversInfo(riderLocation, radius)
 	fmt.Println("drivers size", len(drivers))
-	nearestDriver := drivers[0]
 
+	if len(drivers) == 0 {
+		return nil, err.NotFoundError("no drivers found in given radius")
+	}
+	nearestDriver := drivers[0]
 	riderCoordinates := core.GetCoordinates(riderLocation)
 	nearestDriverCoordinates := core.GetCoordinates(nearestDriver.Location)
 

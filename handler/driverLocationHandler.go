@@ -28,11 +28,15 @@ func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 	}
 	response, err := dlh.Dls.SaveDriverLocation(dlr)
 	if err != nil {
-		return c.Status(err.Code).JSON(err)
+		return c.Status(err.Code).JSON(ApiResponse{
+			Code:    err.Code,
+			Message: err.Message,
+			Data:    response,
+		})
 	}
 	return c.Status(http.StatusCreated).JSON(ApiResponse{
 		Code:    http.StatusCreated,
-		Message: "success",
+		Message: http.StatusText(http.StatusCreated),
 		Data:    response,
 	})
 }
@@ -46,12 +50,16 @@ func (dlh driverLocationHandler) Search(c *fiber.Ctx) error {
 
 	response, err := dlh.Dls.GetNearestDriver(sd)
 	if err != nil {
-		return c.Status(err.Code).JSON(err)
+		return c.Status(err.Code).JSON(ApiResponse{
+			Code:    err.Code,
+			Message: err.Message,
+			Data:    response,
+		})
 	}
 
 	return c.Status(http.StatusOK).JSON(ApiResponse{
 		Code:    http.StatusOK,
-		Message: "success",
+		Message: http.StatusText(http.StatusOK),
 		Data:    response,
 	})
 }
