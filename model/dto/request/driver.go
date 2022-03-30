@@ -13,8 +13,8 @@ type DriverLocationRequest struct {
 }
 
 type SearchDriver struct {
-	Radius      int
-	Coordinates core.Coordinate
+	Radius      int             `json:"radius"`
+	Coordinates core.Coordinate `json:"coordinates"`
 }
 
 func (dlr DriverLocationRequest) ToDriverInfo() model.DriverInfo {
