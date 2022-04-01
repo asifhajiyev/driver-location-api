@@ -1,4 +1,4 @@
-package handler
+package model
 
 type ApiResponse struct {
 	Code    int         `json:"code"`

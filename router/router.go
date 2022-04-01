@@ -1,7 +1,7 @@
 package router
 
 import (
-	"driver-location-api/handler"
+	"driver-location-api/controllers/handler"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
@@ -13,6 +13,6 @@ type HandlerList struct {
 func (h *HandlerList) SetupRoutes(app *fiber.App) {
 	app.Use(logger.New())
 
-	dl := app.Group("api").Group("driver-location")
-	h.SetupDriverLocationRoute(dl)
+	dl := app.Group("api").Group("drivers")
+	h.SetupDriverRoute(dl)
 }

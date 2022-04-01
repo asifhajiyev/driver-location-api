@@ -1,9 +1,9 @@
 package request
 
 import (
+	"driver-location-api/domain/model"
+	"driver-location-api/domain/model/core"
 	err "driver-location-api/error"
-	"driver-location-api/model"
-	"driver-location-api/model/core"
 	"net/http"
 )
 
@@ -12,7 +12,7 @@ type DriverLocationRequest struct {
 	Location core.Coordinate `json:"location"`
 }
 
-type SearchDriver struct {
+type SearchDriverRequest struct {
 	Radius      int             `json:"radius"`
 	Coordinates core.Coordinate `json:"coordinates"`
 }

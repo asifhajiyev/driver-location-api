@@ -1,11 +1,11 @@
 package util
 
 import (
-	"driver-location-api/model/core"
+	"driver-location-api/domain/model/core"
 	"math"
 )
 
-const earthRadius = 6371
+const EarthRadius = 6371
 
 type DistanceCalculator interface {
 	Calculate(from core.Coordinate, to core.Coordinate) float64
@@ -28,5 +28,5 @@ func (h CalculateByHaversine) Calculate(from core.Coordinate, to core.Coordinate
 
 	c := 2 * math.Atan2(math.Sqrt(a), math.Sqrt(1-a))
 
-	return FloatToTwoDecimalFloat(c * earthRadius)
+	return FloatToTwoDecimalFloat(c * EarthRadius)
 }

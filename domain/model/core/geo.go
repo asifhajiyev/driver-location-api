@@ -26,11 +26,3 @@ func GetCoordinates(l Location) Coordinate {
 		Latitude:  l.Coordinates[1],
 	}
 }
-
-/*func GetCoordinates(l Location) Coordinate {
-	fmt.Println("l is", l.Coordinates)
-	return Coordinate{
-		Longitude: l.Coordinates.([]float64)[0],
-		Latitude:  l.Coordinates.([]float64)[1],
-	}
-}*/

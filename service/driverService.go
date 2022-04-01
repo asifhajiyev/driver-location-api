@@ -1,12 +1,12 @@
 package service
 
 import (
+	"driver-location-api/controllers/model/dto/request"
+	"driver-location-api/controllers/model/dto/response"
+	"driver-location-api/domain/model"
+	"driver-location-api/domain/model/core"
+	"driver-location-api/domain/repository"
 	err "driver-location-api/error"
-	"driver-location-api/model"
-	"driver-location-api/model/core"
-	"driver-location-api/model/dto/request"
-	"driver-location-api/model/dto/response"
-	"driver-location-api/repository"
 	"driver-location-api/util"
 	"fmt"
 	"mime/multipart"
@@ -16,7 +16,7 @@ import (
 type DriverLocationService interface {
 	SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error)
 	SaveDriverLocationFile(fh *multipart.FileHeader) *err.Error
-	GetNearestDriver(sd request.SearchDriver) (*model.RideInfo, *err.Error)
+	GetNearestDriver(sd request.SearchDriverRequest) (*model.RideInfo, *err.Error)
 }
 
 type driverLocationService struct {
@@ -47,7 +47,7 @@ func (dls driverLocationService) SaveDriverLocation(dlr request.DriverLocationRe
 	}, nil
 }
 
-func (dls driverLocationService) GetNearestDriver(sd request.SearchDriver) (*model.RideInfo, *err.Error) {
+func (dls driverLocationService) GetNearestDriver(sd request.SearchDriverRequest) (*model.RideInfo, *err.Error) {
 	longitude := sd.Coordinates.Longitude
 	latitude := sd.Coordinates.Latitude
 	radius := sd.Radius
@@ -57,13 +57,14 @@ func (dls driverLocationService) GetNearestDriver(sd request.SearchDriver) (*mod
 	}
 
 	riderLocation := core.NewPoint(longitude, latitude)
-	drivers, _ := dls.repo.GetNearDriversInfo(riderLocation, radius)
+	drivers, _ := dls.repo.GetNearDrivers(riderLocation, radius)
 	fmt.Println("drivers size", len(drivers))
 
 	if len(drivers) == 0 {
 		return nil, err.NotFoundError("no drivers found in given radius")
 	}
 	nearestDriver := drivers[0]
+
 	riderCoordinates := core.GetCoordinates(riderLocation)
 	nearestDriverCoordinates := core.GetCoordinates(nearestDriver.Location)
 

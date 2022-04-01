@@ -1,11 +1,12 @@
-package repository
+package repositories
 
 import (
 	"context"
 	"driver-location-api/db"
+	"driver-location-api/domain/model"
+	"driver-location-api/domain/model/core"
+	"driver-location-api/domain/repository"
 	err "driver-location-api/error"
-	"driver-location-api/model"
-	"driver-location-api/model/core"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
@@ -15,17 +16,11 @@ import (
 
 const collectionDriverLocation = "driver_locations"
 
-type DriverLocationRepo interface {
-	SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error)
-	SaveDriverLocationFile(di []model.DriverInfo) *err.Error
-	GetNearDriversInfo(g core.Location, radius int) ([]*model.DriverInfo, *err.Error)
-	createIndex(field string, i string) *err.Error
-}
 type driverLocationRepo struct {
 	db *mongo.Database
 }
 
-func NewDriverLocationRepo(m *db.MongoRepository) DriverLocationRepo {
+func NewDriverLocationRepo(m *db.MongoRepository) repository.DriverLocationRepo {
 	return &driverLocationRepo{db: m.GetMongoDB()}
 }
 
@@ -40,7 +35,6 @@ func (dlr driverLocationRepo) SaveDriverLocation(di model.DriverInfo) (*model.Dr
 }
 
 func (dlr driverLocationRepo) SaveDriverLocationFile(di []model.DriverInfo) *err.Error {
-
 	var d []interface{}
 	for _, t := range di {
 		d = append(d, t)
@@ -54,7 +48,7 @@ func (dlr driverLocationRepo) SaveDriverLocationFile(di []model.DriverInfo) *err
 	return nil
 }
 
-func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([]*model.DriverInfo, *err.Error) {
+func (dlr driverLocationRepo) GetNearDrivers(l core.Location, radius int) ([]*model.DriverInfo, *err.Error) {
 	ctx := context.Background()
 	fmt.Println("it works")
 	fmt.Println(l)
@@ -77,16 +71,6 @@ func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([
 		return drivers, err.NotFoundError("no driver found near you")
 	}
 	e = cursor.All(ctx, &drivers)
-	/*for cursor.Next(ctx) {
-		fmt.Println("cursor raw", cursor.Current)
-		var d *core.DriverInfo
-		e = cursor.Decode(&d)
-		if e != nil {
-			return nil, err.NotFoundError("can not fetch drivers")
-		}
-		drivers = append(drivers, d)
-	}*/
-
 	if e != nil {
 		return nil, err.NotFoundError("no driver found near you")
 	}
