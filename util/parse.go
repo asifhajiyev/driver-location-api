@@ -4,7 +4,7 @@ import (
 	"encoding/csv"
 	log "github.com/sirupsen/logrus"
 	"math"
-	"os"
+	"mime/multipart"
 	"strconv"
 )
 
@@ -24,17 +24,17 @@ func StringToInt(s string) int {
 	return i
 }
 
-func CsvToSlice(filePath string) [][]string {
-	f, err := os.Open(filePath)
+func CsvToSlice(fh *multipart.FileHeader) [][]string {
+	f, err := fh.Open()
 	if err != nil {
-		log.Fatal("unable to read input file "+filePath, err)
+		log.Fatal("unable to read file", err)
 	}
 	defer f.Close()
 
 	csvReader := csv.NewReader(f)
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		log.Fatal("unable to parse CSV file for "+filePath, err)
+		log.Fatal("unable to parse CSV file", err)
 	}
 	return records[1:]
 }

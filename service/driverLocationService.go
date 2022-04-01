@@ -9,11 +9,13 @@ import (
 	"driver-location-api/repository"
 	"driver-location-api/util"
 	"fmt"
+	"mime/multipart"
+	"os"
 )
 
 type DriverLocationService interface {
 	SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error)
-	UploadDriverLocationFile() *err.Error
+	SaveDriverLocationFile(fh *multipart.FileHeader) *err.Error
 	GetNearestDriver(sd request.SearchDriver) (*model.RideInfo, *err.Error)
 }
 
@@ -45,10 +47,6 @@ func (dls driverLocationService) SaveDriverLocation(dlr request.DriverLocationRe
 	}, nil
 }
 
-func (dls driverLocationService) UploadDriverLocationFile() *err.Error {
-	return nil
-}
-
 func (dls driverLocationService) GetNearestDriver(sd request.SearchDriver) (*model.RideInfo, *err.Error) {
 	longitude := sd.Coordinates.Longitude
 	latitude := sd.Coordinates.Latitude
@@ -76,4 +74,42 @@ func (dls driverLocationService) GetNearestDriver(sd request.SearchDriver) (*mod
 		DriverInfo: *nearestDriver,
 		Distance:   distance,
 	}, nil
+}
+
+func (dls driverLocationService) SaveDriverLocationFile(fh *multipart.FileHeader) *err.Error {
+	content := util.CsvToSlice(fh)
+
+	var dlUploadPatchSize = util.StringToInt(os.Getenv("bitaksi_task_INSERT_DOC_NUM_AT_ONCE"))
+	patchData := make([][]string, 0)
+
+	for _, v := range content {
+		patchData = append(patchData, v)
+		if len(patchData) == dlUploadPatchSize {
+			fmt.Println("data in len", len(patchData))
+			go toDriverInfoSliceAndUpload(dls, patchData)
+			patchData = nil
+		}
+	}
+	if len(patchData) > 0 {
+		fmt.Println("data in remainder", len(patchData))
+		go toDriverInfoSliceAndUpload(dls, patchData)
+	}
+
+	return nil
+}
+
+func toDriverInfoSliceAndUpload(dls driverLocationService, s [][]string) {
+	var dis []model.DriverInfo
+
+	for i := 0; i < len(s); i++ {
+		longitude := util.StringToFloat(s[i][0])
+		latitude := util.StringToFloat(s[i][1])
+		di := model.DriverInfo{Location: core.Location{
+			Type:        "Point",
+			Coordinates: []float64{longitude, latitude},
+		}}
+		dis = append(dis, di)
+	}
+
+	dls.repo.SaveDriverLocationFile(dis)
 }
