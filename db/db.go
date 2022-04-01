@@ -78,6 +78,10 @@ func NewMongoRepository(dbName string, dbTimeout string) (*MongoRepository, erro
 	}
 }*/
 
-func (m MongoRepository) GetCollection(c string) *mongo.Collection {
+/*func (m MongoRepository) GetCollection(c string) *mongo.Collection {
 	return m.Client.Database(m.Db).Collection(c)
+}*/
+
+func (m MongoRepository) GetMongoDB() *mongo.Database {
+	return m.Client.Database(m.Db)
 }

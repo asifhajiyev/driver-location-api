@@ -13,7 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-const collectionName = "driver_locations"
+const collectionDriverLocation = "driver_locations"
 
 type DriverLocationRepo interface {
 	SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error)
@@ -22,16 +22,16 @@ type DriverLocationRepo interface {
 	createIndex(field string, i string) *err.Error
 }
 type driverLocationRepo struct {
-	c *mongo.Collection
+	db *mongo.Database
 }
 
 func NewDriverLocationRepo(m *db.MongoRepository) DriverLocationRepo {
-	return &driverLocationRepo{c: m.GetCollection(collectionName)}
+	return &driverLocationRepo{db: m.GetMongoDB()}
 }
 
 func (dlr driverLocationRepo) SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error) {
 	fmt.Println(di)
-	_, e := dlr.c.InsertOne(context.Background(), di)
+	_, e := dlr.db.Collection(collectionDriverLocation).InsertOne(context.Background(), di)
 	if e != nil {
 		log.Errorf("SaveDriverLocation.error: %v", e)
 		return nil, err.ServerError("data could not be saved")
@@ -45,7 +45,7 @@ func (dlr driverLocationRepo) SaveDriverLocationFile(di []model.DriverInfo) *err
 	for _, t := range di {
 		d = append(d, t)
 	}
-	_, e := dlr.c.InsertMany(context.Background(), d)
+	_, e := dlr.db.Collection(collectionDriverLocation).InsertMany(context.Background(), d)
 	if e != nil {
 		log.Errorf("SaveDriverLocation.error: %v", e)
 		return err.ServerError("data could not be saved")
@@ -71,7 +71,7 @@ func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([
 	}
 
 	var drivers []*model.DriverInfo
-	cursor, e := dlr.c.Find(ctx, filter)
+	cursor, e := dlr.db.Collection(collectionDriverLocation).Find(ctx, filter)
 
 	if e != nil {
 		return drivers, err.NotFoundError("no driver found near you")
@@ -95,7 +95,7 @@ func (dlr driverLocationRepo) GetNearDriversInfo(l core.Location, radius int) ([
 }
 
 func (dlr driverLocationRepo) createIndex(field string, i string) *err.Error {
-	_, e := dlr.c.Indexes().CreateOne(context.Background(), mongo.IndexModel{
+	_, e := dlr.db.Collection(collectionDriverLocation).Indexes().CreateOne(context.Background(), mongo.IndexModel{
 		Keys: bsonx.Doc{{Key: field, Value: bsonx.String(i)}},
 	})
 	if e != nil {
