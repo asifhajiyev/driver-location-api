@@ -1,4 +1,4 @@
-package router
+package routers
 
 import (
 	"driver-location-api/controllers/handler"

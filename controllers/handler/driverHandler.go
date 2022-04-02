@@ -4,7 +4,7 @@ import (
 	"driver-location-api/controllers/model"
 	"driver-location-api/controllers/model/dto/request"
 	e "driver-location-api/error"
-	"driver-location-api/service"
+	"driver-location-api/services"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"strings"
@@ -16,10 +16,10 @@ type DriverLocationHandler interface {
 }
 
 type driverLocationHandler struct {
-	Service service.DriverLocationService
+	Service services.DriverLocationService
 }
 
-func NewDriverLocationHandler(service service.DriverLocationService) DriverLocationHandler {
+func NewDriverLocationHandler(service services.DriverLocationService) DriverLocationHandler {
 	return driverLocationHandler{Service: service}
 }
 

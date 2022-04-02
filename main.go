@@ -4,8 +4,8 @@ import (
 	"driver-location-api/controllers/handler"
 	"driver-location-api/db"
 	"driver-location-api/repositories"
-	"driver-location-api/router"
-	"driver-location-api/service"
+	"driver-location-api/routers"
+	"driver-location-api/services"
 	"github.com/gofiber/fiber/v2"
 	"log"
 	"os"
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	dlRepo := repositories.NewDriverLocationRepo(mongo)
-	dlService := service.NewDriverLocationService(dlRepo)
+	dlService := services.NewDriverLocationService(dlRepo)
 	dlHandler := handler.NewDriverLocationHandler(dlService)
 
 	app := fiber.New()
@@ -30,7 +30,7 @@ func main() {
 		DeepLinking: false,
 	}))*/
 
-	r := router.HandlerList{Dlh: dlHandler}
+	r := routers.HandlerList{Dlh: dlHandler}
 	r.SetupRoutes(app)
 
 	log.Fatal(app.Listen(":8080"))

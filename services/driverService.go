@@ -1,4 +1,4 @@
-package service
+package services
 
 import (
 	"driver-location-api/controllers/model/dto/request"
