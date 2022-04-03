@@ -5,44 +5,36 @@ import "net/http"
 const URLNotFound = "requested url does not exist"
 
 type Error struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+	Details interface{} `json:"details"`
 }
 
-func (e Error) AsResponse() *Error {
-	return &Error{
-		Message: e.Message,
-	}
+type FieldValidationError struct {
+	FailedField string `json:"failedField"`
+	Tag         string `json:"tag"`
 }
 
-func (e Error) AsMessage() string {
-	return e.Message
-}
-
-func NotFoundError(msg string) *Error {
+func NotFoundError(details interface{}) *Error {
 	return &Error{
 		Code:    http.StatusNotFound,
-		Message: msg,
+		Message: http.StatusText(http.StatusNotFound),
+		Details: details,
 	}
 }
 
-func ServerError(msg string) *Error {
+func ServerError(details interface{}) *Error {
 	return &Error{
 		Code:    http.StatusInternalServerError,
-		Message: msg,
+		Message: http.StatusText(http.StatusInternalServerError),
+		Details: details,
 	}
 }
 
-func UnAuthorizedError(msg string) *Error {
-	return &Error{
-		Code:    http.StatusUnauthorized,
-		Message: msg,
-	}
-}
-
-func ValidationError(msg string) *Error {
+func ValidationError(details interface{}) *Error {
 	return &Error{
 		Code:    http.StatusBadRequest,
-		Message: msg,
+		Message: http.StatusText(http.StatusBadRequest),
+		Details: details,
 	}
 }

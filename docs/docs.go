@@ -53,6 +53,10 @@ const docTemplate = `{
     "definitions": {
         "core.Coordinate": {
             "type": "object",
+            "required": [
+                "latitude",
+                "longitude"
+            ],
             "properties": {
                 "latitude": {
                     "type": "number"
@@ -69,6 +73,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "data": {},
+                "errorDetails": {},
                 "message": {
                     "type": "string"
                 }
@@ -76,6 +81,10 @@ const docTemplate = `{
         },
         "request.DriverLocationRequest": {
             "type": "object",
+            "required": [
+                "location",
+                "type"
+            ],
             "properties": {
                 "location": {
                     "$ref": "#/definitions/core.Coordinate"

@@ -5,12 +5,16 @@ definitions:
         type: number
       longitude:
         type: number
+    required:
+    - latitude
+    - longitude
     type: object
   model.RestResponse:
     properties:
       code:
         type: integer
       data: {}
+      errorDetails: {}
       message:
         type: string
     type: object
@@ -20,6 +24,9 @@ definitions:
         $ref: '#/definitions/core.Coordinate'
       type:
         type: string
+    required:
+    - location
+    - type
     type: object
 info:
   contact: {}

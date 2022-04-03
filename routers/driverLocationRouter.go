@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func (h HandlerList) SetupDriverRoute(dl fiber.Router) {
-	dl.Post("/save", h.Dlh.SaveDriverLocation)
-	dl.Post("/search", h.Dlh.Search)
+func (h HandlerList) SetupDriverRoute(r fiber.Router) {
+	r.Post("/save", h.Dh.SaveDriverLocation)
+	r.Post("/search", h.Dh.SearchDriver)
 }

@@ -1,5 +1,9 @@
 package model
 
+import (
+	"driver-location-api/domain/constants"
+)
+
 func IsValidLongitude(longitude float64) bool {
 	return longitude >= -180 && longitude <= 180
 }
@@ -9,5 +13,5 @@ func IsValidLatitude(latitude float64) bool {
 }
 
 func IsPointType(s string) bool {
-	return s == "Point"
+	return s == constants.LocationTypePoint
 }

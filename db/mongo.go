@@ -54,32 +54,11 @@ func NewMongoRepository(dbName string, dbTimeout string) (*MongoRepository, erro
 	return repo, nil
 }
 
-/*func connectToDB() *mongo.Database {
-	url := getConnectionString()
-	client, err := mongo.NewClient(options.Client().ApplyURI(url))
-	if err != nil {
-		log.Fatal(err)
-	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	db := client.Database(os.Getenv("DB_NAME"))
-	return db
-}*/
-
 /*func closeConnection(client *mongo.Client, ctx context.Context) {
 	err := client.Disconnect(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-}*/
-
-/*func (m MongoRepository) GetCollection(c string) *mongo.Collection {
-	return m.Client.Database(m.Db).Collection(c)
 }*/
 
 func (m MongoRepository) GetMongoDB() *mongo.Database {

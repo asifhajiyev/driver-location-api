@@ -3,37 +3,37 @@ package services
 import (
 	"driver-location-api/controllers/model/dto/request"
 	"driver-location-api/controllers/model/dto/response"
+	"driver-location-api/domain/constants"
 	"driver-location-api/domain/model"
 	"driver-location-api/domain/model/core"
 	"driver-location-api/domain/repository"
 	err "driver-location-api/error"
 	"driver-location-api/util"
-	"fmt"
 	"mime/multipart"
 	"os"
 )
 
-type DriverLocationService interface {
+type DriverService interface {
 	SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error)
-	SaveDriverLocationFile(fh *multipart.FileHeader) *err.Error
+	SaveDriverLocationFile(fh *multipart.FileHeader) (string, *err.Error)
 	GetNearestDriver(sd request.SearchDriverRequest) (*model.RideInfo, *err.Error)
 }
 
-type driverLocationService struct {
-	repo repository.DriverLocationRepo
+type driverService struct {
+	repo repository.DriverRepository
 }
 
-func NewDriverLocationService(repo repository.DriverLocationRepo) DriverLocationService {
-	return driverLocationService{repo: repo}
+func NewDriverService(repo repository.DriverRepository) DriverService {
+	return driverService{repo: repo}
 }
 
-func (dls driverLocationService) SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error) {
-	e := dlr.Validate()
+func (ds driverService) SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error) {
+	e := dlr.ValidateValues()
 	if e != nil {
 		return nil, e
 	}
 	di := dlr.ToDriverInfo()
-	result, e := dls.repo.SaveDriverLocation(di)
+	result, e := ds.repo.SaveDriverLocation(di)
 
 	if e != nil {
 		return nil, e
@@ -47,21 +47,24 @@ func (dls driverLocationService) SaveDriverLocation(dlr request.DriverLocationRe
 	}, nil
 }
 
-func (dls driverLocationService) GetNearestDriver(sd request.SearchDriverRequest) (*model.RideInfo, *err.Error) {
+func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model.RideInfo, *err.Error) {
 	longitude := sd.Coordinates.Longitude
 	latitude := sd.Coordinates.Latitude
 	radius := sd.Radius
 
 	if !model.IsValidLongitude(longitude) || !model.IsValidLatitude(latitude) {
-		return nil, err.ValidationError("longitude and latitude should be in the right range")
+		return nil, err.ValidationError(constants.InvalidCoordinates)
 	}
 
 	riderLocation := core.NewPoint(longitude, latitude)
-	drivers, _ := dls.repo.GetNearDrivers(riderLocation, radius)
-	fmt.Println("drivers size", len(drivers))
+	drivers, er := ds.repo.GetNearDrivers(riderLocation, radius)
+
+	if er != nil {
+		return nil, er
+	}
 
 	if len(drivers) == 0 {
-		return nil, err.NotFoundError("no drivers found in given radius")
+		return nil, err.NotFoundError(constants.DriverNotFound)
 	}
 	nearestDriver := drivers[0]
 
@@ -77,7 +80,7 @@ func (dls driverLocationService) GetNearestDriver(sd request.SearchDriverRequest
 	}, nil
 }
 
-func (dls driverLocationService) SaveDriverLocationFile(fh *multipart.FileHeader) *err.Error {
+func (ds driverService) SaveDriverLocationFile(fh *multipart.FileHeader) (string, *err.Error) {
 	content := util.CsvToSlice(fh)
 
 	var dlUploadPatchSize = util.StringToInt(os.Getenv("bitaksi_task_INSERT_DOC_NUM_AT_ONCE"))
@@ -86,27 +89,25 @@ func (dls driverLocationService) SaveDriverLocationFile(fh *multipart.FileHeader
 	for _, v := range content {
 		patchData = append(patchData, v)
 		if len(patchData) == dlUploadPatchSize {
-			fmt.Println("data in len", len(patchData))
-			go toDriverInfoSliceAndUpload(dls, patchData)
+			go toDriverInfoSliceAndUpload(ds, patchData)
 			patchData = nil
 		}
 	}
 	if len(patchData) > 0 {
-		fmt.Println("data in remainder", len(patchData))
-		go toDriverInfoSliceAndUpload(dls, patchData)
+		go toDriverInfoSliceAndUpload(ds, patchData)
 	}
 
-	return nil
+	return constants.SavingDriverData, nil
 }
 
-func toDriverInfoSliceAndUpload(dls driverLocationService, s [][]string) {
+func toDriverInfoSliceAndUpload(dls driverService, s [][]string) {
 	var dis []model.DriverInfo
 
 	for i := 0; i < len(s); i++ {
 		longitude := util.StringToFloat(s[i][0])
 		latitude := util.StringToFloat(s[i][1])
 		di := model.DriverInfo{Location: core.Location{
-			Type:        "Point",
+			Type:        constants.LocationTypePoint,
 			Coordinates: []float64{longitude, latitude},
 		}}
 		dis = append(dis, di)

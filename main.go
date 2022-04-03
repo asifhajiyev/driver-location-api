@@ -20,13 +20,13 @@ func main() {
 		log.Panic("could not connect to database")
 	}
 
-	dlRepo := repositories.NewDriverLocationRepo(mongo)
-	dlService := services.NewDriverLocationService(dlRepo)
-	dlHandler := handler.NewDriverLocationHandler(dlService)
+	dRepo := repositories.NewDriverRepository(mongo)
+	dService := services.NewDriverService(dRepo)
+	dHandler := handler.NewDriverHandler(dService)
 
 	app := fiber.New()
 
-	r := routers.HandlerList{Dlh: dlHandler}
+	r := routers.HandlerList{Dh: dHandler}
 	r.SetupRoutes(app)
 
 	log.Fatal(app.Listen(":8080"))

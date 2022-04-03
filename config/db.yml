@@ -1,4 +1,0 @@
-database:
-  driver-location:
-    name: "driver-location"
-    timeout: 10

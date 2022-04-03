@@ -1,6 +1,8 @@
 package core
 
-import "fmt"
+import (
+	"driver-location-api/domain/constants"
+)
 
 type Location struct {
 	Type        string    `json:"type" bson:"type"`
@@ -8,19 +10,18 @@ type Location struct {
 }
 
 type Coordinate struct {
-	Longitude float64 `json:"longitude"`
-	Latitude  float64 `json:"latitude"`
+	Longitude float64 `json:"longitude" validate:"required"`
+	Latitude  float64 `json:"latitude" validate:"required"`
 }
 
 func NewPoint(longitude, latitude float64) Location {
 	return Location{
-		"Point",
+		constants.LocationTypePoint,
 		[]float64{longitude, latitude},
 	}
 }
 
 func GetCoordinates(l Location) Coordinate {
-	fmt.Println("l is", l.Coordinates)
 	return Coordinate{
 		Longitude: l.Coordinates[0],
 		Latitude:  l.Coordinates[1],

@@ -27,14 +27,14 @@ func StringToInt(s string) int {
 func CsvToSlice(fh *multipart.FileHeader) [][]string {
 	f, err := fh.Open()
 	if err != nil {
-		log.Fatal("unable to read file", err)
+		log.Errorf("unable to read file %v", err)
 	}
 	defer f.Close()
 
 	csvReader := csv.NewReader(f)
 	records, err := csvReader.ReadAll()
 	if err != nil {
-		log.Fatal("unable to parse CSV file", err)
+		log.Errorf("unable to parse CSV file %v", err)
 	}
 	return records[1:]
 }

@@ -10,15 +10,15 @@ import (
 )
 
 type HandlerList struct {
-	Dlh handler.DriverLocationHandler
+	Dh handler.DriverHandler
 }
 
 func (h *HandlerList) SetupRoutes(app *fiber.App) {
-	UseSwagger(app)
+	useSwagger(app)
 	app.Use(logger.New())
 
-	dl := app.Group("api").Group("drivers")
-	h.SetupDriverRoute(dl)
+	driverRoute := app.Group("api").Group("drivers")
+	h.SetupDriverRoute(driverRoute)
 
 	handleNotFoundError(app)
 }
@@ -35,7 +35,7 @@ func handleNotFoundError(app *fiber.App) {
 	)
 }
 
-func UseSwagger(app *fiber.App) {
+func useSwagger(app *fiber.App) {
 	route := app.Group("/swagger")
 	route.Get("*", swagger.HandlerDefault)
 }
