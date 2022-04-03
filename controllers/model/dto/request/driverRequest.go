@@ -38,7 +38,7 @@ func (dlr DriverLocationRequest) ValidateValues() *err.Error {
 		return &err.Error{
 			Code:    http.StatusUnprocessableEntity,
 			Message: "Make sure fields are not empty and valid",
-			Details: constants.InvalidCoordinates,
+			Details: constants.ErrorInvalidCoordinates,
 		}
 	}
 	return nil

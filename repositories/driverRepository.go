@@ -30,7 +30,7 @@ func (dr driverRepository) SaveDriverLocation(di model.DriverInfo) (*model.Drive
 	_, e := dr.db.Collection(collectionDriverLocation).InsertOne(context.Background(), di)
 	if e != nil {
 		log.Errorf("SaveDriverLocation.error: %v", e)
-		return nil, err.ServerError(constants.DataNotSaved)
+		return nil, err.ServerError(constants.ErrorDataNotSaved)
 	}
 	return &di, nil
 }
@@ -43,7 +43,7 @@ func (dr driverRepository) SaveDriverLocationFile(di []model.DriverInfo) *err.Er
 	_, e := dr.db.Collection(collectionDriverLocation).InsertMany(context.Background(), d)
 	if e != nil {
 		log.Errorf("SaveDriverLocation.error: %v", e)
-		return err.ServerError(constants.DataNotSaved)
+		return err.ServerError(constants.ErrorDataNotSaved)
 	}
 	dr.createIndex("location", "2dsphere")
 	return nil
@@ -66,11 +66,11 @@ func (dr driverRepository) GetNearDrivers(location core.Location, radius int) ([
 	cursor, e := dr.db.Collection(collectionDriverLocation).Find(ctx, filter)
 
 	if e != nil {
-		return drivers, err.ServerError(constants.CouldNotGetDriverData)
+		return drivers, err.ServerError(constants.ErrorCouldNotGetDriverData)
 	}
 	e = cursor.All(ctx, &drivers)
 	if e != nil {
-		return drivers, err.NotFoundError(constants.CouldNotGetDriverData)
+		return drivers, err.NotFoundError(constants.ErrorCouldNotGetDriverData)
 	}
 
 	return drivers, nil
@@ -82,7 +82,7 @@ func (dr driverRepository) createIndex(field string, indexType string) *err.Erro
 	})
 	if e != nil {
 		log.Errorf("SaveDriverLocation.error: %v", e)
-		return err.ServerError(constants.IndexNotCreated)
+		return err.ServerError(constants.ErrorIndexNotCreated)
 	}
 	return nil
 }

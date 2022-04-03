@@ -53,7 +53,7 @@ func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model
 	radius := sd.Radius
 
 	if !model.IsValidLongitude(longitude) || !model.IsValidLatitude(latitude) {
-		return nil, err.ValidationError(constants.InvalidCoordinates)
+		return nil, err.ValidationError(constants.ErrorInvalidCoordinates)
 	}
 
 	riderLocation := core.NewPoint(longitude, latitude)
@@ -64,7 +64,7 @@ func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model
 	}
 
 	if len(drivers) == 0 {
-		return nil, err.NotFoundError(constants.DriverNotFound)
+		return nil, err.NotFoundError(constants.ErrorDriverNotFound)
 	}
 	nearestDriver := drivers[0]
 

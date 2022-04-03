@@ -3,10 +3,11 @@ package routers
 import (
 	"driver-location-api/controllers/handler"
 	"driver-location-api/controllers/model"
-	err "driver-location-api/error"
+	"driver-location-api/domain/constants"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"net/http"
 )
 
 type HandlerList struct {
@@ -26,11 +27,9 @@ func (h *HandlerList) SetupRoutes(app *fiber.App) {
 func handleNotFoundError(app *fiber.App) {
 	app.Use(
 		func(c *fiber.Ctx) error {
-			return c.Status(fiber.StatusNotFound).JSON(model.RestResponse{
-				Code:    fiber.StatusNotFound,
-				Message: err.URLNotFound,
-				Data:    nil,
-			})
+			return c.Status(fiber.StatusNotFound).JSON(
+				model.BuildRestResponse(fiber.StatusNotFound, http.StatusText(fiber.StatusNotFound),
+					nil, constants.ErrorURLNotFound))
 		},
 	)
 }

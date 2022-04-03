@@ -3,6 +3,7 @@ package model
 import (
 	err "driver-location-api/error"
 	"github.com/go-playground/validator"
+	"strings"
 )
 
 type RestResponse struct {
@@ -20,7 +21,7 @@ func ValidateRequest(driverLocationRequest interface{}) []*err.FieldValidationEr
 	if e != nil {
 		for _, er := range e.(validator.ValidationErrors) {
 			var element err.FieldValidationError
-			element.FailedField = er.StructField()
+			element.FailedField = strings.ToLower(er.StructField())
 			element.Tag = er.Tag()
 			errors = append(errors, &element)
 		}
