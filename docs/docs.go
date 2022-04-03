@@ -10,17 +10,20 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "email": "asif.hajiyev@outlook.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/drivers/save": {
+        "/drivers/save": {
             "post": {
                 "description": "Save Driver Location",
                 "consumes": [
-                    "application/json"
+                    "application/json",
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -36,6 +39,46 @@ const docTemplate = `{
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/request.DriverLocationRequest"
+                        }
+                    },
+                    {
+                        "type": "file",
+                        "description": "drivers",
+                        "name": "drivers",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RestResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/drivers/search": {
+            "post": {
+                "description": "Serch Driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Search Driver by giving rider location and maximum distance",
+                "parameters": [
+                    {
+                        "description": "riderLocation and radius",
+                        "name": "riderLocation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SearchDriverRequest"
                         }
                     }
                 ],
@@ -93,18 +136,33 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        },
+        "request.SearchDriverRequest": {
+            "type": "object",
+            "required": [
+                "coordinates",
+                "radius"
+            ],
+            "properties": {
+                "coordinates": {
+                    "$ref": "#/definitions/core.Coordinate"
+                },
+                "radius": {
+                    "type": "integer"
+                }
+            }
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
+	BasePath:         "/api/",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Driver Location API",
+	Description:      "This is a Driver Location API to save them and search",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }

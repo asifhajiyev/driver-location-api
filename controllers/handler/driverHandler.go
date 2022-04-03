@@ -26,14 +26,16 @@ func NewDriverHandler(service services.DriverService) DriverHandler {
 }
 
 // SaveDriverLocation godoc
-// @Summary      Save Driver Location, supports batch upload and single location object
-// @Tags 		 Driver
-// @Description  Save Driver Location
-// @Accept       json
-// @Produce      json
-// @Param        driverLocation  body request.DriverLocationRequest false "driverLocation"
-// @Success      200  {object}  model.RestResponse
-// @Router       /api/drivers/save [post]
+// @Summary			Save Driver Location, supports batch upload and single location object
+// @Tags 			Driver
+// @Description 	Save Driver Location
+// @Accept      	json
+// @Accept			multipart/form-data
+// @Produce     	json
+// @Param       	driverLocation  body 		request.DriverLocationRequest 	false 	"driverLocation"
+// @Param       	drivers 		formData 	file 							false 	"drivers"
+// @Success     	200  {object}  model.RestResponse
+// @Router      	/drivers/save [post]
 func (dh driverHandler) SaveDriverLocation(c *fiber.Ctx) error {
 	logger.Info("SaveDriverLocation.begin")
 	var response interface{}
@@ -85,6 +87,15 @@ func (dh driverHandler) SaveDriverLocation(c *fiber.Ctx) error {
 		model.BuildRestResponse(http.StatusCreated, http.StatusText(http.StatusCreated), response, nil))
 }
 
+// SearchDriver godoc
+// @Summary			Search Driver by giving rider location and maximum distance
+// @Tags 			Driver
+// @Description 	Serch Driver
+// @Accept      	json
+// @Produce     	json
+// @Param       	riderLocation  body 	request.SearchDriverRequest 	true 	"riderLocation and radius"
+// @Success     	200  {object}  model.RestResponse
+// @Router      	/drivers/search [post]
 func (dh driverHandler) SearchDriver(c *fiber.Ctx) error {
 	fmt.Println()
 	logger.Info("SearchDriver.begin")

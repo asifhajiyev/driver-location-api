@@ -1,14 +1,21 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "This is a Driver Location API to save them and search",
+        "title": "Driver Location API",
+        "contact": {
+            "email": "asif.hajiyev@outlook.com"
+        },
+        "version": "1.0"
     },
+    "basePath": "/api/",
     "paths": {
-        "/api/drivers/save": {
+        "/drivers/save": {
             "post": {
                 "description": "Save Driver Location",
                 "consumes": [
-                    "application/json"
+                    "application/json",
+                    "multipart/form-data"
                 ],
                 "produces": [
                     "application/json"
@@ -24,6 +31,46 @@
                         "in": "body",
                         "schema": {
                             "$ref": "#/definitions/request.DriverLocationRequest"
+                        }
+                    },
+                    {
+                        "type": "file",
+                        "description": "drivers",
+                        "name": "drivers",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RestResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/drivers/search": {
+            "post": {
+                "description": "Serch Driver",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Search Driver by giving rider location and maximum distance",
+                "parameters": [
+                    {
+                        "description": "riderLocation and radius",
+                        "name": "riderLocation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.SearchDriverRequest"
                         }
                     }
                 ],
@@ -79,6 +126,21 @@
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "request.SearchDriverRequest": {
+            "type": "object",
+            "required": [
+                "coordinates",
+                "radius"
+            ],
+            "properties": {
+                "coordinates": {
+                    "$ref": "#/definitions/core.Coordinate"
+                },
+                "radius": {
+                    "type": "integer"
                 }
             }
         }

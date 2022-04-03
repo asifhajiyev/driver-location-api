@@ -12,6 +12,14 @@ import (
 	"os"
 )
 
+// @title           Driver Location API
+// @version         1.0
+// @description     This is a Driver Location API to save them and search
+
+// @contact.email  	asif.hajiyev@outlook.com
+
+// @BasePath  /api/
+
 func main() {
 	InitEnvVariables()
 

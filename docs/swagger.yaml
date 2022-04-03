@@ -1,3 +1,4 @@
+basePath: /api/
 definitions:
   core.Coordinate:
     properties:
@@ -28,13 +29,28 @@ definitions:
     - location
     - type
     type: object
+  request.SearchDriverRequest:
+    properties:
+      coordinates:
+        $ref: '#/definitions/core.Coordinate'
+      radius:
+        type: integer
+    required:
+    - coordinates
+    - radius
+    type: object
 info:
-  contact: {}
+  contact:
+    email: asif.hajiyev@outlook.com
+  description: This is a Driver Location API to save them and search
+  title: Driver Location API
+  version: "1.0"
 paths:
-  /api/drivers/save:
+  /drivers/save:
     post:
       consumes:
       - application/json
+      - multipart/form-data
       description: Save Driver Location
       parameters:
       - description: driverLocation
@@ -42,6 +58,10 @@ paths:
         name: driverLocation
         schema:
           $ref: '#/definitions/request.DriverLocationRequest'
+      - description: drivers
+        in: formData
+        name: drivers
+        type: file
       produces:
       - application/json
       responses:
@@ -50,6 +70,28 @@ paths:
           schema:
             $ref: '#/definitions/model.RestResponse'
       summary: Save Driver Location, supports batch upload and single location object
+      tags:
+      - Driver
+  /drivers/search:
+    post:
+      consumes:
+      - application/json
+      description: Serch Driver
+      parameters:
+      - description: riderLocation and radius
+        in: body
+        name: riderLocation
+        required: true
+        schema:
+          $ref: '#/definitions/request.SearchDriverRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RestResponse'
+      summary: Search Driver by giving rider location and maximum distance
       tags:
       - Driver
 swagger: "2.0"
