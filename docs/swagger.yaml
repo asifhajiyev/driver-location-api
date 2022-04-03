@@ -1,4 +1,48 @@
+definitions:
+  core.Coordinate:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    type: object
+  model.RestResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+  request.DriverLocationRequest:
+    properties:
+      location:
+        $ref: '#/definitions/core.Coordinate'
+      type:
+        type: string
+    type: object
 info:
   contact: {}
-paths: {}
+paths:
+  /api/drivers/save:
+    post:
+      consumes:
+      - application/json
+      description: Save Driver Location
+      parameters:
+      - description: driverLocation
+        in: body
+        name: driverLocation
+        schema:
+          $ref: '#/definitions/request.DriverLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RestResponse'
+      summary: Save Driver Location, supports batch upload and single location object
+      tags:
+      - Driver
 swagger: "2.0"

@@ -23,6 +23,15 @@ func NewDriverLocationHandler(service services.DriverLocationService) DriverLoca
 	return driverLocationHandler{Service: service}
 }
 
+// SaveDriverLocation godoc
+// @Summary      Save Driver Location, supports batch upload and single location object
+// @Tags 		 Driver
+// @Description  Save Driver Location
+// @Accept       json
+// @Produce      json
+// @Param        driverLocation  body request.DriverLocationRequest false "driverLocation"
+// @Success      200  {object}  model.RestResponse
+// @Router       /api/drivers/save [post]
 func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 	var response interface{}
 	ct := c.Get(fiber.HeaderContentType)
@@ -30,7 +39,7 @@ func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 	if strings.Split(ct, ";")[0] == fiber.MIMEMultipartForm {
 		fh, er := c.FormFile("drivers")
 		if er != nil {
-			return c.Status(http.StatusBadRequest).JSON(model.ApiResponse{
+			return c.Status(http.StatusBadRequest).JSON(model.RestResponse{
 				Code:    http.StatusBadRequest,
 				Message: er.Error(),
 				Data:    nil,
@@ -38,7 +47,7 @@ func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 		}
 		err := dlh.Service.SaveDriverLocationFile(fh)
 		if err != nil {
-			return c.Status(err.Code).JSON(model.ApiResponse{
+			return c.Status(err.Code).JSON(model.RestResponse{
 				Code:    err.Code,
 				Message: err.Message,
 				Data:    nil,
@@ -57,7 +66,7 @@ func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 		response, err = dlh.Service.SaveDriverLocation(dlr)
 
 		if err != nil {
-			return c.Status(err.Code).JSON(model.ApiResponse{
+			return c.Status(err.Code).JSON(model.RestResponse{
 				Code:    err.Code,
 				Message: err.Message,
 				Data:    response,
@@ -65,7 +74,7 @@ func (dlh driverLocationHandler) SaveDriverLocation(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Status(http.StatusCreated).JSON(model.ApiResponse{
+	return c.Status(http.StatusCreated).JSON(model.RestResponse{
 		Code:    http.StatusCreated,
 		Message: http.StatusText(http.StatusCreated),
 		Data:    response,
@@ -82,14 +91,14 @@ func (dlh driverLocationHandler) Search(c *fiber.Ctx) error {
 
 	response, err := dlh.Service.GetNearestDriver(sd)
 	if err != nil {
-		return c.Status(err.Code).JSON(model.ApiResponse{
+		return c.Status(err.Code).JSON(model.RestResponse{
 			Code:    err.Code,
 			Message: err.Message,
 			Data:    response,
 		})
 	}
 
-	return c.Status(http.StatusOK).JSON(model.ApiResponse{
+	return c.Status(http.StatusOK).JSON(model.RestResponse{
 		Code:    http.StatusOK,
 		Message: http.StatusText(http.StatusOK),
 		Data:    response,

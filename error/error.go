@@ -2,6 +2,8 @@ package error
 
 import "net/http"
 
+const URLNotFound = "requested url does not exist"
+
 type Error struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`

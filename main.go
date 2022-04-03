@@ -3,6 +3,7 @@ package main
 import (
 	"driver-location-api/controllers/handler"
 	"driver-location-api/db"
+	_ "driver-location-api/docs"
 	"driver-location-api/repositories"
 	"driver-location-api/routers"
 	"driver-location-api/services"
@@ -24,11 +25,6 @@ func main() {
 	dlHandler := handler.NewDriverLocationHandler(dlService)
 
 	app := fiber.New()
-
-	/*app.Get("/swagger/*", swagger.New(swagger.Config{ // custom
-		URL:         "/swagger/doc.json",
-		DeepLinking: false,
-	}))*/
 
 	r := routers.HandlerList{Dlh: dlHandler}
 	r.SetupRoutes(app)

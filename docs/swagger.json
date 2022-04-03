@@ -3,5 +3,75 @@
     "info": {
         "contact": {}
     },
-    "paths": {}
+    "paths": {
+        "/api/drivers/save": {
+            "post": {
+                "description": "Save Driver Location",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Save Driver Location, supports batch upload and single location object",
+                "parameters": [
+                    {
+                        "description": "driverLocation",
+                        "name": "driverLocation",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/request.DriverLocationRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RestResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "core.Coordinate": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                }
+            }
+        },
+        "model.RestResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {},
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.DriverLocationRequest": {
+            "type": "object",
+            "properties": {
+                "location": {
+                    "$ref": "#/definitions/core.Coordinate"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }
