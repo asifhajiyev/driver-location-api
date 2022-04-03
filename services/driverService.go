@@ -8,6 +8,7 @@ import (
 	"driver-location-api/domain/model/core"
 	"driver-location-api/domain/repository"
 	err "driver-location-api/error"
+	"driver-location-api/logger"
 	"driver-location-api/util"
 	"mime/multipart"
 	"os"
@@ -28,26 +29,33 @@ func NewDriverService(repo repository.DriverRepository) DriverService {
 }
 
 func (ds driverService) SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error) {
+	logger.Info("SaveDriverLocation.begin")
 	e := dlr.ValidateValues()
 	if e != nil {
+		logger.Error("SaveDriverLocation.error", e)
 		return nil, e
 	}
 	di := dlr.ToDriverInfo()
 	result, e := ds.repo.SaveDriverLocation(di)
 
 	if e != nil {
+		logger.Error("SaveDriverLocation.error", e)
 		return nil, e
 	}
-	return &response.DriverLocationResponse{
+
+	resp := &response.DriverLocationResponse{
 		Type: result.Location.Type,
 		Location: core.Coordinate{
 			Longitude: result.Location.Coordinates[0],
 			Latitude:  result.Location.Coordinates[1],
 		},
-	}, nil
+	}
+	logger.Info("SaveDriverLocation.end", resp)
+	return resp, nil
 }
 
 func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model.RideInfo, *err.Error) {
+	logger.Info("GetNearestDriver.begin")
 	longitude := sd.Coordinates.Longitude
 	latitude := sd.Coordinates.Latitude
 	radius := sd.Radius
@@ -74,13 +82,17 @@ func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model
 	calculator := util.CalculateByHaversine{}
 	distance := calculator.Calculate(riderCoordinates, nearestDriverCoordinates)
 
-	return &model.RideInfo{
+	rideInfo := &model.RideInfo{
 		DriverInfo: *nearestDriver,
 		Distance:   distance,
-	}, nil
+	}
+
+	logger.Info("GetNearestDriver.end", rideInfo)
+	return rideInfo, nil
 }
 
 func (ds driverService) SaveDriverLocationFile(fh *multipart.FileHeader) (string, *err.Error) {
+	logger.Info("SaveDriverLocationFile.begin")
 	content := util.CsvToSlice(fh)
 
 	var dlUploadPatchSize = util.StringToInt(os.Getenv("bitaksi_task_INSERT_DOC_NUM_AT_ONCE"))
@@ -96,7 +108,7 @@ func (ds driverService) SaveDriverLocationFile(fh *multipart.FileHeader) (string
 	if len(patchData) > 0 {
 		go toDriverInfoSliceAndUpload(ds, patchData)
 	}
-
+	logger.Info("SaveDriverLocationFile.end")
 	return constants.SavingDriverData, nil
 }
 

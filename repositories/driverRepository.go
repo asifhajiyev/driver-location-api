@@ -8,8 +8,8 @@ import (
 	"driver-location-api/domain/model/core"
 	"driver-location-api/domain/repository"
 	err "driver-location-api/error"
+	"driver-location-api/logger"
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -26,30 +26,35 @@ func NewDriverRepository(m *db.MongoRepository) repository.DriverRepository {
 }
 
 func (dr driverRepository) SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error) {
+	logger.Info("SaveDriverLocation.begin")
 	fmt.Println(di)
 	_, e := dr.db.Collection(collectionDriverLocation).InsertOne(context.Background(), di)
 	if e != nil {
-		log.Errorf("SaveDriverLocation.error: %v", e)
+		logger.Error("SaveDriverLocation.error", e)
 		return nil, err.ServerError(constants.ErrorDataNotSaved)
 	}
+	logger.Info("SaveDriverLocation.end", &di)
 	return &di, nil
 }
 
 func (dr driverRepository) SaveDriverLocationFile(di []model.DriverInfo) *err.Error {
+	logger.Info("SaveDriverLocationFile.begin")
 	var d []interface{}
 	for _, t := range di {
 		d = append(d, t)
 	}
 	_, e := dr.db.Collection(collectionDriverLocation).InsertMany(context.Background(), d)
 	if e != nil {
-		log.Errorf("SaveDriverLocation.error: %v", e)
+		logger.Error("SaveDriverLocationFile.error", e)
 		return err.ServerError(constants.ErrorDataNotSaved)
 	}
 	dr.createIndex("location", "2dsphere")
+	logger.Info("SaveDriverLocationFile.end")
 	return nil
 }
 
 func (dr driverRepository) GetNearDrivers(location core.Location, radius int) ([]*model.DriverInfo, *err.Error) {
+	logger.Info("GetNearDrivers.begin")
 	ctx := context.Background()
 
 	filter := bson.D{
@@ -66,13 +71,15 @@ func (dr driverRepository) GetNearDrivers(location core.Location, radius int) ([
 	cursor, e := dr.db.Collection(collectionDriverLocation).Find(ctx, filter)
 
 	if e != nil {
+		logger.Error("GetNearDrivers.error", e)
 		return drivers, err.ServerError(constants.ErrorCouldNotGetDriverData)
 	}
 	e = cursor.All(ctx, &drivers)
 	if e != nil {
+		logger.Error("GetNearDrivers.error", e)
 		return drivers, err.NotFoundError(constants.ErrorCouldNotGetDriverData)
 	}
-
+	logger.Info("GetNearDrivers.end", drivers)
 	return drivers, nil
 }
 
@@ -81,7 +88,7 @@ func (dr driverRepository) createIndex(field string, indexType string) *err.Erro
 		Keys: bsonx.Doc{{Key: field, Value: bsonx.String(indexType)}},
 	})
 	if e != nil {
-		log.Errorf("SaveDriverLocation.error: %v", e)
+		logger.Error("createIndex.error", e)
 		return err.ServerError(constants.ErrorIndexNotCreated)
 	}
 	return nil
