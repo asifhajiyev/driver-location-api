@@ -5,19 +5,19 @@ import (
 )
 
 type Location struct {
-	Type        string    `json:"type" bson:"type"`
-	Coordinates []float64 `json:"coordinates" bson:"coordinates"`
+	Type        string     `json:"type" bson:"type"`
+	Coordinates []*float64 `json:"coordinates" bson:"coordinates"`
 }
 
 type Coordinate struct {
-	Longitude float64 `json:"longitude" validate:"required"`
-	Latitude  float64 `json:"latitude" validate:"required"`
+	Longitude *float64 `json:"longitude" validate:"required"`
+	Latitude  *float64 `json:"latitude" validate:"required"`
 }
 
-func NewPoint(longitude, latitude float64) Location {
+func NewPoint(longitude, latitude *float64) Location {
 	return Location{
 		constants.LocationTypePoint,
-		[]float64{longitude, latitude},
+		[]*float64{longitude, latitude},
 	}
 }
 

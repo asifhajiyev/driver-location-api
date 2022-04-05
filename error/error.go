@@ -11,6 +11,7 @@ type Error struct {
 type FieldValidationError struct {
 	FailedField string `json:"failedField"`
 	Tag         string `json:"tag"`
+	Message     string `json:"message"`
 }
 
 func NotFoundError(details interface{}) *Error {

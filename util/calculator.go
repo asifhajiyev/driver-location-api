@@ -15,10 +15,10 @@ type CalculateByHaversine struct {
 }
 
 func (h CalculateByHaversine) Calculate(from core.Coordinate, to core.Coordinate) float64 {
-	fromLng := DegreesToRadians(from.Longitude)
-	fromLt := DegreesToRadians(from.Latitude)
-	toLng := DegreesToRadians(to.Longitude)
-	toLt := DegreesToRadians(to.Latitude)
+	fromLng := DegreesToRadians(*from.Longitude)
+	fromLt := DegreesToRadians(*from.Latitude)
+	toLng := DegreesToRadians(*to.Longitude)
+	toLt := DegreesToRadians(*to.Latitude)
 
 	deltaLng := toLng - fromLng
 	deltaLt := toLt - fromLt

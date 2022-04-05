@@ -72,12 +72,12 @@ func (dr driverRepository) GetNearDrivers(location core.Location, radius int) ([
 
 	if e != nil {
 		logger.Error("GetNearDrivers.error", e)
-		return drivers, err.ServerError(constants.ErrorCouldNotGetDriverData)
+		return nil, err.ServerError(constants.ErrorCouldNotGetDriverData)
 	}
 	e = cursor.All(ctx, &drivers)
 	if e != nil {
 		logger.Error("GetNearDrivers.error", e)
-		return drivers, err.NotFoundError(constants.ErrorCouldNotGetDriverData)
+		return nil, err.ServerError(constants.ErrorCouldNotGetDriverData)
 	}
 	logger.Info("GetNearDrivers.end", drivers)
 	return drivers, nil

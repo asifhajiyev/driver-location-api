@@ -14,7 +14,7 @@ type DriverLocationRequest struct {
 }
 
 type SearchDriverRequest struct {
-	Radius      int             `json:"radius" validate:"required"`
+	Radius      *int            `json:"radius" validate:"required,min=0"`
 	Coordinates core.Coordinate `json:"coordinates" validate:"required"`
 }
 
@@ -26,7 +26,7 @@ func (dlr DriverLocationRequest) ToDriverInfo() model.DriverInfo {
 	return model.DriverInfo{
 		Location: core.Location{
 			Type:        t,
-			Coordinates: []float64{longitude, latitude},
+			Coordinates: []*float64{longitude, latitude},
 		},
 	}
 }
@@ -38,7 +38,7 @@ func (dlr DriverLocationRequest) ValidateValues() *err.Error {
 		return &err.Error{
 			Code:    http.StatusUnprocessableEntity,
 			Message: "Make sure fields are not empty and valid",
-			Details: constants.ErrorInvalidCoordinates,
+			Details: constants.ErrorInvalidLocation,
 		}
 	}
 	return nil

@@ -23,6 +23,7 @@ func ValidateRequest(driverLocationRequest interface{}) []*err.FieldValidationEr
 			var element err.FieldValidationError
 			element.FailedField = strings.ToLower(er.StructField())
 			element.Tag = er.Tag()
+			element.Message = strings.TrimSpace(element.FailedField + " is " + element.Tag + " " + er.Param())
 			errors = append(errors, &element)
 		}
 	}

@@ -60,12 +60,12 @@ func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model
 	latitude := sd.Coordinates.Latitude
 	radius := sd.Radius
 
-	if !model.IsValidLongitude(longitude) || !model.IsValidLatitude(latitude) {
-		return nil, err.ValidationError(constants.ErrorInvalidCoordinates)
+	if !model.IsValidLongitude(longitude) || !model.IsValidLatitude(latitude) || *radius < 0 {
+		return nil, err.ValidationError(constants.ErrorInvalidLocation)
 	}
 
 	riderLocation := core.NewPoint(longitude, latitude)
-	drivers, er := ds.repo.GetNearDrivers(riderLocation, radius)
+	drivers, er := ds.repo.GetNearDrivers(riderLocation, *radius)
 
 	if er != nil {
 		return nil, er
@@ -115,7 +115,7 @@ func toDriverInfoSliceAndUpload(dls driverService, s [][]string) {
 		latitude := util.StringToFloat(s[i][1])
 		di := model.DriverInfo{Location: core.Location{
 			Type:        constants.LocationTypePoint,
-			Coordinates: []float64{longitude, latitude},
+			Coordinates: []*float64{&longitude, &latitude},
 		}}
 		dis = append(dis, di)
 	}
