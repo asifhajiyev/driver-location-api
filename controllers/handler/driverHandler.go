@@ -6,7 +6,6 @@ import (
 	e "driver-location-api/error"
 	"driver-location-api/logger"
 	"driver-location-api/services"
-	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
 	"strings"
@@ -90,14 +89,13 @@ func (dh driverHandler) SaveDriverLocation(c *fiber.Ctx) error {
 // SearchDriver godoc
 // @Summary			Search Driver by giving rider location and maximum distance
 // @Tags 			Driver
-// @Description 	Serch Driver
+// @Description 	Search Driver
 // @Accept      	json
 // @Produce     	json
 // @Param       	riderLocation  body 	request.SearchDriverRequest 	true 	"riderLocation and radius"
 // @Success     	200  {object}  model.RestResponse
 // @Router      	/drivers/search [post]
 func (dh driverHandler) SearchDriver(c *fiber.Ctx) error {
-	fmt.Println()
 	logger.Info("SearchDriver.begin")
 	var sdr request.SearchDriverRequest
 	if err := c.BodyParser(&sdr); err != nil {

@@ -75,12 +75,7 @@ func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model
 		return nil, err.NotFoundError(constants.ErrorDriverNotFound)
 	}
 	nearestDriver := drivers[0]
-
-	riderCoordinates := core.GetCoordinates(riderLocation)
-	nearestDriverCoordinates := core.GetCoordinates(nearestDriver.Location)
-
-	calculator := util.CalculateByHaversine{}
-	distance := calculator.Calculate(riderCoordinates, nearestDriverCoordinates)
+	distance := calculateDistance(riderLocation, nearestDriver.Location)
 
 	rideInfo := &model.RideInfo{
 		DriverInfo: *nearestDriver,
@@ -126,4 +121,14 @@ func toDriverInfoSliceAndUpload(dls driverService, s [][]string) {
 	}
 
 	dls.repo.SaveDriverLocationFile(dis)
+}
+
+func calculateDistance(from core.Location, to core.Location) float64 {
+	riderCoordinates := core.GetCoordinates(from)
+	nearestDriverCoordinates := core.GetCoordinates(to)
+
+	calculator := util.CalculateByHaversine{}
+	distance := calculator.Calculate(riderCoordinates, nearestDriverCoordinates)
+
+	return distance
 }
