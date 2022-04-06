@@ -8,11 +8,11 @@ import (
 	"driver-location-api/services"
 	"github.com/gofiber/fiber/v2"
 	"net/http"
-	"strings"
 )
 
 type DriverHandler interface {
 	SaveDriverLocation(c *fiber.Ctx) error
+	UploadDriverLocationFile(c *fiber.Ctx) error
 	SearchDriver(c *fiber.Ctx) error
 }
 
@@ -36,53 +36,55 @@ func NewDriverHandler(service services.DriverService) DriverHandler {
 // @Success     	200  {object}  model.RestResponse
 // @Router      	/drivers/save [post]
 func (dh driverHandler) SaveDriverLocation(c *fiber.Ctx) error {
-	logger.Info("SaveDriverLocation.begin")
-	var response interface{}
+	logger.Info("SaveDriverInfo.begin")
+	var dlr request.DriverLocationRequest
 	var err *e.Error
-	ct := c.Get(fiber.HeaderContentType)
 
-	if strings.Split(ct, ";")[0] == fiber.MIMEMultipartForm {
-		logger.Info("SaveDriverLocation.batch")
-		fh, er := c.FormFile("drivers")
-		if er != nil {
-			logger.Error("SaveDriverLocation.batch.error", er)
-			return c.Status(http.StatusUnprocessableEntity).JSON(
-				model.BuildRestResponse(http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity),
-					nil, er.Error()))
-		}
-
-		if response, err = dh.service.SaveDriverLocationFile(fh); err != nil {
-			logger.Error("SaveDriverLocation.batch.error", err)
-			return c.Status(err.Code).JSON(
-				model.BuildRestResponse(err.Code, err.Message, response, nil))
-		}
-
-	} else {
-		logger.Info("SaveDriverLocation.single")
-		var dlr request.DriverLocationRequest
-		var err *e.Error
-
-		if er := c.BodyParser(&dlr); er != nil {
-			logger.Error("SaveDriverLocation.single.error", er)
-			return c.Status(http.StatusBadRequest).JSON(
-				model.BuildRestResponse(http.StatusBadRequest, http.StatusText(http.StatusBadRequest),
-					nil, er.Error()))
-		}
-
-		if vrErr := model.ValidateStructFields(dlr); vrErr != nil {
-			logger.Error("SaveDriverLocation.single.error", vrErr)
-			return c.Status(http.StatusBadRequest).JSON(
-				model.BuildRestResponse(http.StatusBadRequest, http.StatusText(http.StatusBadRequest), nil, vrErr))
-		}
-
-		response, err = dh.service.SaveDriverLocation(dlr)
-		if err != nil {
-			logger.Error("SaveDriverLocation.single.error", err)
-			return c.Status(err.Code).JSON(
-				model.BuildRestResponse(err.Code, err.Message, response, err.Details))
-		}
+	if er := c.BodyParser(&dlr); er != nil {
+		logger.Error("SaveDriverInfo.error", er)
+		return c.Status(http.StatusBadRequest).JSON(
+			model.BuildRestResponse(http.StatusBadRequest, http.StatusText(http.StatusBadRequest),
+				nil, er.Error()))
 	}
-	logger.Info("SaveDriverLocation.end", response)
+
+	vrErr := model.ValidateStructFields(dlr)
+	if vrErr != nil {
+		logger.Error("SaveDriverInfo.error", vrErr)
+		return c.Status(http.StatusBadRequest).JSON(
+			model.BuildRestResponse(http.StatusBadRequest, http.StatusText(http.StatusBadRequest), nil, vrErr))
+	}
+
+	response, err := dh.service.SaveDriverLocation(dlr)
+	if err != nil {
+		logger.Error("SaveDriverInfo.error", err)
+		return c.Status(err.Code).JSON(
+			model.BuildRestResponse(err.Code, err.Message, response, err.Details))
+	}
+
+	logger.Info("SaveDriverInfo.end", response)
+	return c.Status(http.StatusCreated).JSON(
+		model.BuildRestResponse(http.StatusCreated, http.StatusText(http.StatusCreated), response, nil))
+}
+
+func (dh driverHandler) UploadDriverLocationFile(c *fiber.Ctx) error {
+	logger.Info("UploadDriverLocationFile.begin")
+	fh, er := c.FormFile("drivers")
+
+	if er != nil {
+		logger.Error("UploadDriverLocationFile.error", er)
+		return c.Status(http.StatusUnprocessableEntity).JSON(
+			model.BuildRestResponse(http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity),
+				nil, er.Error()))
+	}
+
+	response, err := dh.service.SaveDriverLocationFile(fh)
+	if err != nil {
+		logger.Error("UploadDriverLocationFile.error", err)
+		return c.Status(err.Code).JSON(
+			model.BuildRestResponse(err.Code, err.Message, response, nil))
+	}
+
+	logger.Info("SaveDriverInfo.end", response)
 	return c.Status(http.StatusCreated).JSON(
 		model.BuildRestResponse(http.StatusCreated, http.StatusText(http.StatusCreated), response, nil))
 }

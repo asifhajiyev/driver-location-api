@@ -276,10 +276,10 @@ func Test_driverService_SaveDriverLocation_with_invalid_inputs(t *testing.T) {
 
 			//assert
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("SaveDriverLocation() got = %v, want %v", got, tt.want)
+				t.Errorf("SaveDriverInfo() got = %v, want %v", got, tt.want)
 			}
 			if !reflect.DeepEqual(got1, tt.wantError) {
-				t.Errorf("SaveDriverLocation() got1 = %v, want %v", got1, tt.wantError)
+				t.Errorf("SaveDriverInfo() got1 = %v, want %v", got1, tt.wantError)
 			}
 		})
 	}
@@ -315,7 +315,7 @@ func Test_driverService_SaveDriverLocation_should_return_error_data_not_saved(t 
 
 	mockDriverRepo.
 		EXPECT().
-		SaveDriverLocation(driverInfo).
+		SaveDriverInfo(driverInfo).
 		Return(nil, errorDataNotSaved)
 
 	//act
@@ -323,10 +323,10 @@ func Test_driverService_SaveDriverLocation_should_return_error_data_not_saved(t 
 
 	//assert
 	if !reflect.ValueOf(got).IsNil() {
-		t.Errorf("SaveDriverLocation() got = %v, want %v", got, nil)
+		t.Errorf("SaveDriverInfo() got = %v, want %v", got, nil)
 	}
 	if !reflect.DeepEqual(gotError, errorDataNotSaved) {
-		t.Errorf("SaveDriverLocation() got1 = %v, want %v", gotError, errorDataNotSaved)
+		t.Errorf("SaveDriverInfo() got1 = %v, want %v", gotError, errorDataNotSaved)
 	}
 }
 
@@ -367,7 +367,7 @@ func Test_driverService_SaveDriverLocation_should_return_saved_data(t *testing.T
 
 	mockDriverRepo.
 		EXPECT().
-		SaveDriverLocation(driverInfo).
+		SaveDriverInfo(driverInfo).
 		Return(&driverInfo, nil)
 
 	//act
@@ -375,9 +375,9 @@ func Test_driverService_SaveDriverLocation_should_return_saved_data(t *testing.T
 
 	//assert
 	if !reflect.DeepEqual(got, saveResult) {
-		t.Errorf("SaveDriverLocation() got = %v, want %v", got, nil)
+		t.Errorf("SaveDriverInfo() got = %v, want %v", got, nil)
 	}
 	if !reflect.ValueOf(gotError).IsNil() {
-		t.Errorf("SaveDriverLocation() got1 = %v, want %v", gotError, nil)
+		t.Errorf("SaveDriverInfo() got1 = %v, want %v", gotError, nil)
 	}
 }

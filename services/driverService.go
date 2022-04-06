@@ -36,7 +36,7 @@ func (ds driverService) SaveDriverLocation(dlr request.DriverLocationRequest) (*
 		return nil, e
 	}
 	di := dlr.ToDriverInfo()
-	result, e := ds.repo.SaveDriverLocation(di)
+	result, e := ds.repo.SaveDriverInfo(di)
 
 	if e != nil {
 		logger.Error("SaveDriverLocation.error", e)
@@ -96,18 +96,20 @@ func (ds driverService) SaveDriverLocationFile(fh *multipart.FileHeader) (string
 	for _, v := range content {
 		patchData = append(patchData, v)
 		if len(patchData) == dlUploadPatchSize {
-			go toDriverInfoSliceAndUpload(ds, patchData)
+			driverInfoSlice := toDriverInfoSlice(patchData)
+			go ds.repo.SaveDriverInfoSlice(driverInfoSlice)
 			patchData = nil
 		}
 	}
 	if len(patchData) > 0 {
-		go toDriverInfoSliceAndUpload(ds, patchData)
+		driverInfoSlice := toDriverInfoSlice(patchData)
+		go ds.repo.SaveDriverInfoSlice(driverInfoSlice)
 	}
 	logger.Info("SaveDriverLocationFile.end")
 	return constants.SavingDriverData, nil
 }
 
-func toDriverInfoSliceAndUpload(dls driverService, s [][]string) {
+func toDriverInfoSlice(s [][]string) []model.DriverInfo {
 	var dis []model.DriverInfo
 
 	for i := 0; i < len(s); i++ {
@@ -120,7 +122,7 @@ func toDriverInfoSliceAndUpload(dls driverService, s [][]string) {
 		dis = append(dis, di)
 	}
 
-	dls.repo.SaveDriverLocationFile(dis)
+	return dis
 }
 
 func calculateDistance(from core.Location, to core.Location) float64 {

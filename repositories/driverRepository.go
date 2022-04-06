@@ -24,30 +24,30 @@ func NewDriverRepository(m *db.MongoRepository) repository.DriverRepository {
 	return &driverRepository{db: m.GetMongoDB()}
 }
 
-func (dr driverRepository) SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error) {
-	logger.Info("SaveDriverLocation.begin")
+func (dr driverRepository) SaveDriverInfo(di model.DriverInfo) (*model.DriverInfo, *err.Error) {
+	logger.Info("SaveDriverInfo.begin")
 	_, e := dr.db.Collection(collectionDriverLocation).InsertOne(context.Background(), di)
 	if e != nil {
-		logger.Error("SaveDriverLocation.error", e)
+		logger.Error("SaveDriverInfo.error", e)
 		return nil, err.ServerError(constants.ErrorDataNotSaved)
 	}
-	logger.Info("SaveDriverLocation.end", &di)
+	logger.Info("SaveDriverInfo.end", &di)
 	return &di, nil
 }
 
-func (dr driverRepository) SaveDriverLocationFile(di []model.DriverInfo) *err.Error {
-	logger.Info("SaveDriverLocationFile.begin")
+func (dr driverRepository) SaveDriverInfoSlice(di []model.DriverInfo) *err.Error {
+	logger.Info("SaveDriverInfoSlice.begin")
 	var d []interface{}
 	for _, t := range di {
 		d = append(d, t)
 	}
 	_, e := dr.db.Collection(collectionDriverLocation).InsertMany(context.Background(), d)
 	if e != nil {
-		logger.Error("SaveDriverLocationFile.error", e)
+		logger.Error("SaveDriverInfoSlice.error", e)
 		return err.ServerError(constants.ErrorDataNotSaved)
 	}
 	dr.createIndex("location", "2dsphere")
-	logger.Info("SaveDriverLocationFile.end")
+	logger.Info("SaveDriverInfoSlice.end")
 	return nil
 }
 

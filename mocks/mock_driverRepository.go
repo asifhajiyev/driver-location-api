@@ -51,31 +51,31 @@ func (mr *MockDriverRepositoryMockRecorder) GetNearDrivers(location, radius inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNearDrivers", reflect.TypeOf((*MockDriverRepository)(nil).GetNearDrivers), location, radius)
 }
 
-// SaveDriverLocation mocks base method.
-func (m *MockDriverRepository) SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *error.Error) {
+// SaveDriverInfo mocks base method.
+func (m *MockDriverRepository) SaveDriverInfo(di model.DriverInfo) (*model.DriverInfo, *error.Error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveDriverLocation", di)
+	ret := m.ctrl.Call(m, "SaveDriverInfo", di)
 	ret0, _ := ret[0].(*model.DriverInfo)
 	ret1, _ := ret[1].(*error.Error)
 	return ret0, ret1
 }
 
-// SaveDriverLocation indicates an expected call of SaveDriverLocation.
-func (mr *MockDriverRepositoryMockRecorder) SaveDriverLocation(di interface{}) *gomock.Call {
+// SaveDriverInfo indicates an expected call of SaveDriverInfo.
+func (mr *MockDriverRepositoryMockRecorder) SaveDriverInfo(di interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveDriverLocation", reflect.TypeOf((*MockDriverRepository)(nil).SaveDriverLocation), di)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveDriverInfo", reflect.TypeOf((*MockDriverRepository)(nil).SaveDriverInfo), di)
 }
 
-// SaveDriverLocationFile mocks base method.
-func (m *MockDriverRepository) SaveDriverLocationFile(di []model.DriverInfo) *error.Error {
+// SaveDriverInfoSlice mocks base method.
+func (m *MockDriverRepository) SaveDriverInfoSlice(di []model.DriverInfo) *error.Error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveDriverLocationFile", di)
+	ret := m.ctrl.Call(m, "SaveDriverInfoSlice", di)
 	ret0, _ := ret[0].(*error.Error)
 	return ret0
 }
 
-// SaveDriverLocationFile indicates an expected call of SaveDriverLocationFile.
-func (mr *MockDriverRepositoryMockRecorder) SaveDriverLocationFile(di interface{}) *gomock.Call {
+// SaveDriverInfoSlice indicates an expected call of SaveDriverInfoSlice.
+func (mr *MockDriverRepositoryMockRecorder) SaveDriverInfoSlice(di interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveDriverLocationFile", reflect.TypeOf((*MockDriverRepository)(nil).SaveDriverLocationFile), di)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveDriverInfoSlice", reflect.TypeOf((*MockDriverRepository)(nil).SaveDriverInfoSlice), di)
 }
