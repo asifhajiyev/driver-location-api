@@ -13,3 +13,4 @@ const ErrorURLNotFound = "requested url does not exist"
 const ErrorInvalidSearchRequest = "longitude and latitude should be in the right range " +
 	"(-180<=longitude<=180 and -90<=latitude<=90) and radius should be positive"
 const ErrorBadRequest = "Make sure fields are not empty and valid"
+const ErrorWrongCredentialsForClients = "Provide right credentials to use driver-location-api"
