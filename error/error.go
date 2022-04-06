@@ -30,10 +30,10 @@ func ServerError(details interface{}) *Error {
 	}
 }
 
-func ValidationError(details interface{}) *Error {
+func ValidationError(message string, details interface{}) *Error {
 	return &Error{
 		Code:    http.StatusBadRequest,
-		Message: http.StatusText(http.StatusBadRequest),
+		Message: message,
 		Details: details,
 	}
 }

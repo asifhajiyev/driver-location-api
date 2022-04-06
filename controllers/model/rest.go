@@ -15,7 +15,7 @@ type RestResponse struct {
 
 var validate = validator.New()
 
-func ValidateRequest(driverLocationRequest interface{}) []*err.FieldValidationError {
+func ValidateStructFields(driverLocationRequest interface{}) []*err.FieldValidationError {
 	var errors []*err.FieldValidationError
 	e := validate.Struct(driverLocationRequest)
 	if e != nil {

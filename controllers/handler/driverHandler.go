@@ -45,38 +45,39 @@ func (dh driverHandler) SaveDriverLocation(c *fiber.Ctx) error {
 		logger.Info("SaveDriverLocation.batch")
 		fh, er := c.FormFile("drivers")
 		if er != nil {
-			logger.Error("SaveDriverLocation.error", er)
+			logger.Error("SaveDriverLocation.batch.error", er)
 			return c.Status(http.StatusUnprocessableEntity).JSON(
 				model.BuildRestResponse(http.StatusUnprocessableEntity, http.StatusText(http.StatusUnprocessableEntity),
 					nil, er.Error()))
 		}
 
 		if response, err = dh.service.SaveDriverLocationFile(fh); err != nil {
-			logger.Error("SaveDriverLocation.error", err)
+			logger.Error("SaveDriverLocation.batch.error", err)
 			return c.Status(err.Code).JSON(
 				model.BuildRestResponse(err.Code, err.Message, response, nil))
 		}
 
 	} else {
+		logger.Info("SaveDriverLocation.single")
 		var dlr request.DriverLocationRequest
 		var err *e.Error
 
 		if er := c.BodyParser(&dlr); er != nil {
-			logger.Error("SaveDriverLocation.error", er)
+			logger.Error("SaveDriverLocation.single.error", er)
 			return c.Status(http.StatusBadRequest).JSON(
 				model.BuildRestResponse(http.StatusBadRequest, http.StatusText(http.StatusBadRequest),
 					nil, er.Error()))
 		}
 
-		if vrErr := model.ValidateRequest(dlr); vrErr != nil {
-			logger.Error("SaveDriverLocation.error", vrErr)
+		if vrErr := model.ValidateStructFields(dlr); vrErr != nil {
+			logger.Error("SaveDriverLocation.single.error", vrErr)
 			return c.Status(http.StatusBadRequest).JSON(
 				model.BuildRestResponse(http.StatusBadRequest, http.StatusText(http.StatusBadRequest), nil, vrErr))
 		}
 
 		response, err = dh.service.SaveDriverLocation(dlr)
 		if err != nil {
-			logger.Error("SaveDriverLocation.error", err)
+			logger.Error("SaveDriverLocation.single.error", err)
 			return c.Status(err.Code).JSON(
 				model.BuildRestResponse(err.Code, err.Message, response, err.Details))
 		}
@@ -105,7 +106,7 @@ func (dh driverHandler) SearchDriver(c *fiber.Ctx) error {
 				nil, err.Error()))
 	}
 
-	if vrErr := model.ValidateRequest(sdr); vrErr != nil {
+	if vrErr := model.ValidateStructFields(sdr); vrErr != nil {
 		logger.Error("SearchDriver.error", vrErr)
 		return c.Status(http.StatusBadRequest).JSON(
 			model.BuildRestResponse(http.StatusBadRequest, http.StatusText(http.StatusBadRequest),

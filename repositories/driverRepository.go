@@ -9,7 +9,6 @@ import (
 	"driver-location-api/domain/repository"
 	err "driver-location-api/error"
 	"driver-location-api/logger"
-	"fmt"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/x/bsonx"
@@ -27,7 +26,6 @@ func NewDriverRepository(m *db.MongoRepository) repository.DriverRepository {
 
 func (dr driverRepository) SaveDriverLocation(di model.DriverInfo) (*model.DriverInfo, *err.Error) {
 	logger.Info("SaveDriverLocation.begin")
-	fmt.Println(di)
 	_, e := dr.db.Collection(collectionDriverLocation).InsertOne(context.Background(), di)
 	if e != nil {
 		logger.Error("SaveDriverLocation.error", e)

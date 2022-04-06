@@ -30,7 +30,7 @@ func NewDriverService(repo repository.DriverRepository) DriverService {
 
 func (ds driverService) SaveDriverLocation(dlr request.DriverLocationRequest) (*response.DriverLocationResponse, *err.Error) {
 	logger.Info("SaveDriverLocation.begin")
-	e := dlr.ValidateValues()
+	e := dlr.ValidateDriverLocationRequest()
 	if e != nil {
 		logger.Error("SaveDriverLocation.error", e)
 		return nil, e
@@ -60,8 +60,8 @@ func (ds driverService) GetNearestDriver(sd request.SearchDriverRequest) (*model
 	latitude := sd.Coordinates.Latitude
 	radius := sd.Radius
 
-	if !model.IsValidLongitude(longitude) || !model.IsValidLatitude(latitude) || *radius < 0 {
-		return nil, err.ValidationError(constants.ErrorInvalidLocation)
+	if e := sd.ValidateSearchDriverRequest(); e != nil {
+		return nil, e
 	}
 
 	riderLocation := core.NewPoint(longitude, latitude)
