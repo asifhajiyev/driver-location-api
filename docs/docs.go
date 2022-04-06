@@ -4,156 +4,125 @@ package docs
 
 import "github.com/swaggo/swag"
 
-const docTemplate = `{
-    "schemes": {{ marshal .Schemes }},
-    "swagger": "2.0",
-    "info": {
-        "description": "{{escape .Description}}",
-        "title": "{{.Title}}",
-        "contact": {
-            "email": "asif.hajiyev@outlook.com"
-        },
-        "version": "{{.Version}}"
-    },
-    "host": "{{.Host}}",
-    "basePath": "{{.BasePath}}",
-    "paths": {
-        "/drivers/save": {
-            "post": {
-                "description": "Save Driver Location",
-                "consumes": [
-                    "application/json",
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Driver"
-                ],
-                "summary": "Save Driver Location, supports batch upload and single location object",
-                "parameters": [
-                    {
-                        "description": "driverLocation",
-                        "name": "driverLocation",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/request.DriverLocationRequest"
-                        }
-                    },
-                    {
-                        "type": "file",
-                        "description": "drivers",
-                        "name": "drivers",
-                        "in": "formData"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.RestResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/drivers/search": {
-            "post": {
-                "description": "Serch Driver",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Driver"
-                ],
-                "summary": "Search Driver by giving rider location and maximum distance",
-                "parameters": [
-                    {
-                        "description": "riderLocation and radius",
-                        "name": "riderLocation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/request.SearchDriverRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.RestResponse"
-                        }
-                    }
-                }
-            }
-        }
-    },
-    "definitions": {
-        "core.Coordinate": {
-            "type": "object",
-            "required": [
-                "latitude",
-                "longitude"
-            ],
-            "properties": {
-                "latitude": {
-                    "type": "number"
-                },
-                "longitude": {
-                    "type": "number"
-                }
-            }
-        },
-        "model.RestResponse": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer"
-                },
-                "data": {},
-                "errorDetails": {},
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.DriverLocationRequest": {
-            "type": "object",
-            "required": [
-                "location",
-                "type"
-            ],
-            "properties": {
-                "location": {
-                    "$ref": "#/definitions/core.Coordinate"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "request.SearchDriverRequest": {
-            "type": "object",
-            "required": [
-                "coordinates",
-                "radius"
-            ],
-            "properties": {
-                "coordinates": {
-                    "$ref": "#/definitions/core.Coordinate"
-                },
-                "radius": {
-                    "type": "integer"
-                }
-            }
-        }
-    }
-}`
+const docTemplate = `basePath: /api/
+securityDefinitions:
+  basicAuth:
+    type: basic
+definitions:
+  core.Coordinate:
+    properties:
+      latitude:
+        type: number
+      longitude:
+        type: number
+    required:
+    - latitude
+    - longitude
+    type: object
+  model.RestResponse:
+    properties:
+      code:
+        type: integer
+      data: {}
+      errorDetails: {}
+      message:
+        type: string
+    type: object
+  request.DriverLocationRequest:
+    properties:
+      location:
+        $ref: '#/definitions/core.Coordinate'
+      type:
+        type: string
+    required:
+    - location
+    - type
+    type: object
+  request.SearchDriverRequest:
+    properties:
+      coordinates:
+        $ref: '#/definitions/core.Coordinate'
+      radius:
+        minimum: 0
+        type: integer
+    required:
+    - coordinates
+    - radius
+    type: object
+info:
+  contact:
+    email: asif.hajiyev@outlook.com
+  description: This is a Driver Location API to save them and search
+  title: Driver Location API
+  version: "1.0"
+paths:
+  /drivers/save:
+    post:
+      consumes:
+      - application/json
+      description: Save Driver Location
+      parameters:
+      - description: driverLocation
+        in: body
+        name: driverLocation
+        schema:
+          $ref: '#/definitions/request.DriverLocationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RestResponse'
+      summary: Save Driver Location
+      tags:
+      - Driver
+  /drivers/search:
+    post:
+      consumes:
+      - application/json
+      description: Search Driver
+      parameters:
+      - description: riderLocation and radius
+        in: body
+        name: riderLocation
+        required: true
+        schema:
+          $ref: '#/definitions/request.SearchDriverRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RestResponse'
+      summary: Search Driver by giving rider location and maximum distance
+      tags:
+      - Driver
+      security:
+       - basicAuth: []
+  /drivers/upload-driver-file:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload Driver Location CSV file
+      parameters:
+      - description: drivers
+        in: formData
+        name: drivers
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RestResponse'
+      summary: Upload Driver Location CSV file
+      tags:
+      - Driver
+swagger: "2.0"
+`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{

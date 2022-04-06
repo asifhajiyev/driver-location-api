@@ -25,14 +25,12 @@ func NewDriverHandler(service services.DriverService) DriverHandler {
 }
 
 // SaveDriverLocation godoc
-// @Summary			Save Driver Location, supports batch upload and single location object
+// @Summary			Save Driver Location
 // @Tags 			Driver
 // @Description 	Save Driver Location
 // @Accept      	json
-// @Accept			multipart/form-data
 // @Produce     	json
 // @Param       	driverLocation  body 		request.DriverLocationRequest 	false 	"driverLocation"
-// @Param       	drivers 		formData 	file 							false 	"drivers"
 // @Success     	200  {object}  model.RestResponse
 // @Router      	/drivers/save [post]
 func (dh driverHandler) SaveDriverLocation(c *fiber.Ctx) error {
@@ -66,6 +64,15 @@ func (dh driverHandler) SaveDriverLocation(c *fiber.Ctx) error {
 		model.BuildRestResponse(http.StatusCreated, http.StatusText(http.StatusCreated), response, nil))
 }
 
+// UploadDriverLocationFile godoc
+// @Summary			Upload Driver Location CSV file
+// @Tags 			Driver
+// @Description 	Upload Driver Location CSV file
+// @Accept			multipart/form-data
+// @Produce     	json
+// @Param       	drivers 		formData 	file 							false 	"drivers"
+// @Success     	200  {object}  model.RestResponse
+// @Router      	/drivers/upload-driver-file [post]
 func (dh driverHandler) UploadDriverLocationFile(c *fiber.Ctx) error {
 	logger.Info("UploadDriverLocationFile.begin")
 	fh, er := c.FormFile("drivers")

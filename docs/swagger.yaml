@@ -1,4 +1,7 @@
 basePath: /api/
+securityDefinitions:
+  basicAuth:
+    type: basic
 definitions:
   core.Coordinate:
     properties:
@@ -7,8 +10,8 @@ definitions:
       longitude:
         type: number
     required:
-    - latitude
-    - longitude
+      - latitude
+      - longitude
     type: object
   model.RestResponse:
     properties:
@@ -26,18 +29,19 @@ definitions:
       type:
         type: string
     required:
-    - location
-    - type
+      - location
+      - type
     type: object
   request.SearchDriverRequest:
     properties:
       coordinates:
         $ref: '#/definitions/core.Coordinate'
       radius:
+        minimum: 0
         type: integer
     required:
-    - coordinates
-    - radius
+      - coordinates
+      - radius
     type: object
 info:
   contact:
@@ -49,43 +53,38 @@ paths:
   /drivers/save:
     post:
       consumes:
-      - application/json
-      - multipart/form-data
+        - application/json
       description: Save Driver Location
       parameters:
-      - description: driverLocation
-        in: body
-        name: driverLocation
-        schema:
-          $ref: '#/definitions/request.DriverLocationRequest'
-      - description: drivers
-        in: formData
-        name: drivers
-        type: file
+        - description: driverLocation
+          in: body
+          name: driverLocation
+          schema:
+            $ref: '#/definitions/request.DriverLocationRequest'
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             $ref: '#/definitions/model.RestResponse'
-      summary: Save Driver Location, supports batch upload and single location object
+      summary: Save Driver Location
       tags:
-      - Driver
+        - Driver
   /drivers/search:
     post:
       consumes:
-      - application/json
-      description: Serch Driver
+        - application/json
+      description: Search Driver
       parameters:
-      - description: riderLocation and radius
-        in: body
-        name: riderLocation
-        required: true
-        schema:
-          $ref: '#/definitions/request.SearchDriverRequest'
+        - description: riderLocation and radius
+          in: body
+          name: riderLocation
+          required: true
+          schema:
+            $ref: '#/definitions/request.SearchDriverRequest'
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
@@ -93,5 +92,27 @@ paths:
             $ref: '#/definitions/model.RestResponse'
       summary: Search Driver by giving rider location and maximum distance
       tags:
-      - Driver
+        - Driver
+      security:
+        - basicAuth: []
+  /drivers/upload-driver-file:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Upload Driver Location CSV file
+      parameters:
+        - description: drivers
+          in: formData
+          name: drivers
+          type: file
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.RestResponse'
+      summary: Upload Driver Location CSV file
+      tags:
+        - Driver
 swagger: "2.0"

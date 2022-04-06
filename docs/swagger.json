@@ -14,8 +14,7 @@
             "post": {
                 "description": "Save Driver Location",
                 "consumes": [
-                    "application/json",
-                    "multipart/form-data"
+                    "application/json"
                 ],
                 "produces": [
                     "application/json"
@@ -23,7 +22,7 @@
                 "tags": [
                     "Driver"
                 ],
-                "summary": "Save Driver Location, supports batch upload and single location object",
+                "summary": "Save Driver Location",
                 "parameters": [
                     {
                         "description": "driverLocation",
@@ -32,12 +31,6 @@
                         "schema": {
                             "$ref": "#/definitions/request.DriverLocationRequest"
                         }
-                    },
-                    {
-                        "type": "file",
-                        "description": "drivers",
-                        "name": "drivers",
-                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -52,7 +45,7 @@
         },
         "/drivers/search": {
             "post": {
-                "description": "Serch Driver",
+                "description": "Search Driver",
                 "consumes": [
                     "application/json"
                 ],
@@ -72,6 +65,37 @@
                         "schema": {
                             "$ref": "#/definitions/request.SearchDriverRequest"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.RestResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/drivers/upload-driver-file": {
+            "post": {
+                "description": "Upload Driver Location CSV file",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Driver"
+                ],
+                "summary": "Upload Driver Location CSV file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "drivers",
+                        "name": "drivers",
+                        "in": "formData"
                     }
                 ],
                 "responses": {
@@ -140,7 +164,8 @@
                     "$ref": "#/definitions/core.Coordinate"
                 },
                 "radius": {
-                    "type": "integer"
+                    "type": "integer",
+                    "minimum": 0
                 }
             }
         }
