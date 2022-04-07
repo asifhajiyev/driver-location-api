@@ -17,7 +17,7 @@ POST: http://127.0.0.1:8080/api/drivers/upload-driver-file
 * 'drivers' key and csv file
 
 
-GET: http://127.0.0.1:8080/api/drivers/search
+POST: http://127.0.0.1:8080/api/drivers/search
 * It accepts json in request body, as given below
 ```json
 {
