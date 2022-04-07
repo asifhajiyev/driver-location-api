@@ -1,8 +1,8 @@
 Driver Location API\
-Two endpoints are available\
+Three endpoints are available\
 POST: http://127.0.0.1:8080/api/drivers/save 
-* It accepts application/json and multipart/form-data content types. It means you can pass single location object in request body or file as form data
-* single driverLocation object example
+* It accepts application/json. It means you can pass location object in request body
+* driverLocation object example
 ```json
 {
   "type": "Point",
@@ -13,6 +13,7 @@ POST: http://127.0.0.1:8080/api/drivers/save
 }
 ```
 
+POST: http://127.0.0.1:8080/api/drivers/upload-driver-file
 * 'drivers' key and csv file
 
 
