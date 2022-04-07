@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"driver-location-api/controllers/handler"
 	"driver-location-api/db"
 	_ "driver-location-api/docs"
@@ -29,6 +30,8 @@ func main() {
 	}
 
 	dRepo := repositories.NewDriverRepository(mongo)
+	defer db.CloseConnection(mongo.Client, context.Background())
+
 	dService := services.NewDriverService(dRepo)
 	dHandler := handler.NewDriverHandler(dService)
 

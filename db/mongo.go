@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"log"
 	"os"
 	"time"
 )
@@ -40,8 +41,8 @@ func newMongoClient(mongoServerURL string, timeout int) (*mongo.Client, error) {
 func NewMongoRepository(dbName string, dbTimeout string) (*MongoRepository, error) {
 	timeout := util.StringToInt(dbTimeout)
 	cs := getConnectionString(dbName)
-	fmt.Println("cs", cs)
 	mongoClient, err := newMongoClient(cs, timeout)
+
 	repo := &MongoRepository{
 		Client:  mongoClient,
 		Db:      dbName,
@@ -54,12 +55,12 @@ func NewMongoRepository(dbName string, dbTimeout string) (*MongoRepository, erro
 	return repo, nil
 }
 
-/*func closeConnection(client *mongo.Client, ctx context.Context) {
+func CloseConnection(client *mongo.Client, ctx context.Context) {
 	err := client.Disconnect(ctx)
 	if err != nil {
 		log.Fatal(err)
 	}
-}*/
+}
 
 func (m MongoRepository) GetMongoDB() *mongo.Database {
 	return m.Client.Database(m.Db)
